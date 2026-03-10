@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { PrimaryButton } from '../components/buttons';
+import { SearchIcon } from '../components/icons';
 
 // 定义 AiScript 对象类型
 interface AiScript {
@@ -170,18 +172,10 @@ const AiScriptManager: React.FC = () => {
 
       {/* 顶部工具栏：新增按钮 + 搜索框 */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <button
-          onClick={openAddModal}
-          className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          + 新增脚本
-        </button>
-
+        <PrimaryButton onClick={openAddModal}>+ 新增脚本</PrimaryButton>
         <div className="relative w-full sm:w-72">
           <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+            <SearchIcon />
           </span>
           <input
             type="search"
