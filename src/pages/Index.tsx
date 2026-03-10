@@ -3,6 +3,8 @@ import { PrimaryButton } from '../components/buttons';
 import { SearchIcon } from '../components/icons';
 import { AiScript } from '../common';
 import { AiScriptItem, Pagtaion } from '../components/ai_scripts';
+import NewAiScript from './ai_scripts/NewAiScript';
+import { NavLink } from 'react-router';
 
 /**
  * AiScript 增删改查管理页面
@@ -104,8 +106,8 @@ const AiScriptManager: React.FC = () => {
   };
 
   // 保存脚本 (新增或更新)
-  const handleSave = () => {
-    if (!formData.name.trim() || !formData.content.trim()) {
+  const handleSave = (formdata: { name: string, content: string }) => {
+    if (!formdata.name.trim() || !formdata.content.trim()) {
       alert('请填写名称和内容');
       return;
     }
@@ -115,7 +117,7 @@ const AiScriptManager: React.FC = () => {
       setScripts((prev) =>
         prev.map((script) =>
           script.id === editId
-            ? { ...script, name: formData.name, content: formData.content }
+            ? { ...script, name: formdata.name, content: formdata.content }
             : script
         )
       );
@@ -124,8 +126,8 @@ const AiScriptManager: React.FC = () => {
       const newId = Date.now().toString() + '-' + Math.random().toString(36).substring(2, 8);
       const newScript: AiScript = {
         id: newId,
-        name: formData.name,
-        content: formData.content,
+        name: formdata.name,
+        content: formdata.content,
       };
       setScripts((prev) => [newScript, ...prev]);
     }
@@ -167,7 +169,9 @@ const AiScriptManager: React.FC = () => {
 
       {/* 顶部工具栏：新增按钮 + 搜索框 */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <PrimaryButton onClick={openAddModal}>+ 新增脚本</PrimaryButton>
+        <NavLink to="/ai_scripts/new">
+          <PrimaryButton onClick={openAddModal}>+ 新增脚本</PrimaryButton>
+        </NavLink>
         <div className="relative w-full sm:w-72">
           <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
             <SearchIcon />
@@ -211,84 +215,9 @@ const AiScriptManager: React.FC = () => {
       </section>
 
       {/* 新增/编辑全屏对话框 - 遮罩使用灰色半透明 */}
-      {isFormModalOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          {/* 半透明背景 - 灰色遮罩 */}
-          <div className="fixed inset-0 bg-gray-800/50 transition-opacity" onClick={closeFormModal}></div>
-
-          {/* 全屏模态框主体 */}
-          <div className="flex min-h-full items-center justify-center p-4">
-            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-200 transform transition-all">
-              {/* 内边距 p-8 使内容不贴边 */}
-              <div className="p-8">
-                <h3 className="text-2xl font-semibold text-gray-800 mb-6">
-                  {editId ? '编辑脚本' : '新增脚本'}
-                </h3>
-
-                <div className="space-y-6">
-                  {/* 名称输入 */}
-                  <div>
-                    <label htmlFor="modal-name" className="block text-sm font-medium text-gray-700 mb-2">
-                      名称
-                    </label>
-                    <input
-                      id="modal-name"
-                      type="text"
-                      name="name"
-                      placeholder="例如：Hello World"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  {/* 内容文本域 */}
-                  <div>
-                    <label htmlFor="modal-content" className="block text-sm font-medium text-gray-700 mb-2">
-                      内容
-                    </label>
-                    <textarea
-                      id="modal-content"
-                      name="content"
-                      rows={12}
-                      placeholder="编写 AiScript 代码..."
-                      value={formData.content}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y font-mono text-sm"
-                    />
-                  </div>
-                </div>
-
-                {/* 底部按钮 */}
-                <div className="flex justify-end gap-3 mt-8">
-                  <button
-                    onClick={closeFormModal}
-                    className="cursor-pointer bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-6 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-                  >
-                    取消
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  >
-                    保存
-                  </button>
-                </div>
-
-                {/* 关闭按钮 (小叉) */}
-                <button
-                  onClick={closeFormModal}
-                  className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 cursor-pointer"
-                >
-                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* {isFormModalOpen && (
+        <NewAiScript editId={editId || undefined} /> 
+      )} */}
 
       {/* 删除确认对话框 - 遮罩同样使用灰色半透明 */}
       {isDeleteModalOpen && scriptToDelete && (
