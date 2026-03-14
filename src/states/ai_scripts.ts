@@ -1,17 +1,17 @@
-import { atom } from "recoil";
 import { AiScript } from "../common";
+import { create } from "zustand";
+import { v4 } from "uuid";
 
-export const aiScriptFormdataState = atom({
-  key: "aiScriptFormdata",
-  default: { name: "", content: "" },
-});
+export interface AiScriptsStore {
+  ai_scripts: AiScript[];
+  add: (item: { name: string; content: string }) => void;
+}
 
-export const aiScriptsState = atom<AiScript[]>({
-  key: "aiScripts",
-  default: [
+export const useAiScriptsStore = create<AiScriptsStore>((set) => ({
+  ai_scripts: [
     {
       id: "1",
-      name: "Hello World",
+      name: "Hello World2",
       content: 'print("Hello, world!")\n// 第一个脚本示例',
     },
     {
@@ -43,4 +43,11 @@ export const aiScriptsState = atom<AiScript[]>({
       content: "[1, 2, 3, 4, 5].filter(x => x % 2 === 0);",
     },
   ],
-});
+  add: (ai_script) =>
+    set((state) => {
+      let max_id = v4();
+      return {
+        ai_scripts: [{ ...ai_script, id: max_id }, ...state.ai_scripts],
+      };
+    }),
+}));

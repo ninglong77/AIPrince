@@ -4,6 +4,8 @@ import { SearchIcon } from '../components/icons';
 import { AiScript } from '../common';
 import { AiScriptItem, Pagtaion } from '../components/ai_scripts';
 import { NavLink } from 'react-router';
+import { useAiScriptsStore } from '../states/ai_scripts';
+
 
 /**
  * AiScript 增删改查管理页面
@@ -12,39 +14,9 @@ import { NavLink } from 'react-router';
  * 列表文字左对齐，遮罩使用灰色半透明
  */
 const AiScriptManager: React.FC = () => {
+  const scripts = useAiScriptsStore((state) => state.ai_scripts);
   // 模拟初始数据
-  const [scripts, setScripts] = useState<AiScript[]>([
-    {
-      id: '1',
-      name: 'Hello World',
-      content: 'print("Hello, world!")\n// 第一个脚本示例',
-    },
-    {
-      id: '2',
-      name: 'Fibonacci',
-      content:
-        'function fib(n) {\n  if (n <= 1) return n;\n  return fib(n-1) + fib(n-2);\n}',
-    },
-    {
-      id: '3',
-      name: '数组映射',
-      content: 'const doubled = [1, 2, 3].map(x => x * 2);',
-    },
-    {
-      id: '4',
-      name: '递归示例',
-      content: 'function factorial(n) {\n  if (n === 0) return 1;\n  return n * factorial(n-1);\n}',
-    },
-    {
-      id: '5',
-      name: 'Promise 示例',
-      content: 'new Promise((resolve) => {\n  setTimeout(() => resolve("done"), 1000);\n}).then(console.log);',
-    },
-    {
-      id: '6',
-      name: '数组过滤',
-      content: '[1, 2, 3, 4, 5].filter(x => x % 2 === 0);',
-    },
+  const [scripts1, setScripts] = useState<AiScript[]>([    
   ]);
 
   // 搜索关键词
@@ -77,13 +49,6 @@ const AiScriptManager: React.FC = () => {
     setIsFormModalOpen(true);
   };
 
-  // 关闭新增/编辑对话框
-  const closeFormModal = () => {
-    setIsFormModalOpen(false);
-    setFormData({ name: '', content: '' });
-    setEditId(null);
-  };
-
   // 打开删除确认对话框
   const openDeleteModal = (script: AiScript) => {
     setScriptToDelete(script);
@@ -94,44 +59,6 @@ const AiScriptManager: React.FC = () => {
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
     setScriptToDelete(null);
-  };
-
-  // 处理表单输入变化
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // 保存脚本 (新增或更新)
-  const handleSave = (formdata: { name: string, content: string }) => {
-    if (!formdata.name.trim() || !formdata.content.trim()) {
-      alert('请填写名称和内容');
-      return;
-    }
-
-    if (editId) {
-      // 更新
-      setScripts((prev) =>
-        prev.map((script) =>
-          script.id === editId
-            ? { ...script, name: formdata.name, content: formdata.content }
-            : script
-        )
-      );
-    } else {
-      // 新增
-      const newId = Date.now().toString() + '-' + Math.random().toString(36).substring(2, 8);
-      const newScript: AiScript = {
-        id: newId,
-        name: formdata.name,
-        content: formdata.content,
-      };
-      setScripts((prev) => [newScript, ...prev]);
-    }
-
-    closeFormModal();
   };
 
   // 确认删除
