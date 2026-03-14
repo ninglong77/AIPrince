@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate, useParams } from "react-router";
 import { useAiScriptsStore } from "../../states/ai_scripts";
+import { useNotification } from "../../components/notification";
 
 export default function NewAiScript() {
-    let navigate = useNavigate();
-  const {add} = useAiScriptsStore();
+  const { info, error } = useNotification();
+  let navigate = useNavigate();
+  const { add } = useAiScriptsStore();
   const { editId } = useParams() as { editId?: string };
   const [formData, setFormData] = useState({ name: "", content: "" });
   const handleInputChange = (
@@ -13,17 +15,15 @@ export default function NewAiScript() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  useEffect(() => {
-    console.log('hello')
-  }, [])
 
   const handleSave = (formdata: { name: string; content: string }) => {
     // navigate("/");
     if (!formdata.name.trim() || !formdata.content.trim()) {
-      console.log('请填写名称和内容');
+      error("Please fill in both name and content");
       return;
     }
     add(formdata);
+    info("Successfully added new AiScript");
     navigate("/");
   };
 
