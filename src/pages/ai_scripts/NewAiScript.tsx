@@ -11,13 +11,15 @@ export default function NewAiScript() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = (formdata: { name: string; content: string }) => {};
+  const handleSave = (formdata: { name: string; content: string }) => {
+    
+  };
 
   return (
     <div className="">
       {/* 全屏模态框主体 */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-200 transform transition-all">
+        <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto transform transition-all">
           {/* 内边距 p-8 使内容不贴边 */}
           <div className="p-8">
             <h3 className="text-2xl font-semibold text-gray-800 mb-6">

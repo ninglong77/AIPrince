@@ -3,7 +3,6 @@ import { PrimaryButton } from '../components/buttons';
 import { SearchIcon } from '../components/icons';
 import { AiScript } from '../common';
 import { AiScriptItem, Pagtaion } from '../components/ai_scripts';
-import NewAiScript from './ai_scripts/NewAiScript';
 import { NavLink } from 'react-router';
 
 /**
