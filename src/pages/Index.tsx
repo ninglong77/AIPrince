@@ -15,10 +15,8 @@ import { useAiScriptsStore } from '../states/ai_scripts';
  */
 const AiScriptManager: React.FC = () => {
   const scripts = useAiScriptsStore((state) => state.ai_scripts);
+  const { remove } = useAiScriptsStore();
   const navigate = useNavigate();
-  // 模拟初始数据
-  const [scripts1, setScripts] = useState<AiScript[]>([    
-  ]);
 
   // 搜索关键词
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,7 +46,7 @@ const AiScriptManager: React.FC = () => {
   // 确认删除
   const confirmDelete = () => {
     if (scriptToDelete) {
-      setScripts((prev) => prev.filter((script) => script.id !== scriptToDelete.id));
+      remove(scriptToDelete.id);
       closeDeleteModal();
     }
   };
@@ -125,11 +123,6 @@ const AiScriptManager: React.FC = () => {
           </>
         )}
       </section>
-
-      {/* 新增/编辑全屏对话框 - 遮罩使用灰色半透明 */}
-      {/* {isFormModalOpen && (
-        <NewAiScript editId={editId || undefined} /> 
-      )} */}
 
       {/* 删除确认对话框 - 遮罩同样使用灰色半透明 */}
       {isDeleteModalOpen && scriptToDelete && (

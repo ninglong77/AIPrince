@@ -12,6 +12,7 @@ export interface AiScriptsStore {
   add: (item: ScriptObj) => void;
   findById: (id: string) => undefined | AiScript;
   eidt: (id: string, item: ScriptObj) => void;
+  remove: (id: string) => void;
 }
 
 export const useAiScriptsStore = create<AiScriptsStore>((set, ai_scripts) => ({
@@ -59,6 +60,11 @@ export const useAiScriptsStore = create<AiScriptsStore>((set, ai_scripts) => ({
       }
       return i
     })
+    }
+  }),
+  remove: (id) => set(state => {
+    return {
+      ai_scripts: state.ai_scripts.filter(i => i.id !== id)
     }
   }),
   add: (ai_script) =>
