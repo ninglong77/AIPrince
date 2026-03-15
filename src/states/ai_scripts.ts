@@ -2,12 +2,19 @@ import { AiScript } from "../common";
 import { create } from "zustand";
 import { v4 } from "uuid";
 
-export interface AiScriptsStore {
-  ai_scripts: AiScript[];
-  add: (item: { name: string; content: string }) => void;
+interface ScriptObj {
+  name: string;
+  content: string 
 }
 
-export const useAiScriptsStore = create<AiScriptsStore>((set) => ({
+export interface AiScriptsStore {
+  ai_scripts: AiScript[];
+  add: (item: ScriptObj) => void;
+  findById: (id: string) => undefined | AiScript;
+  eidt: (id: string, item: ScriptObj) => void;
+}
+
+export const useAiScriptsStore = create<AiScriptsStore>((set, ai_scripts) => ({
   ai_scripts: [
     {
       id: "1",
@@ -43,6 +50,17 @@ export const useAiScriptsStore = create<AiScriptsStore>((set) => ({
       content: "[1, 2, 3, 4, 5].filter(x => x % 2 === 0);",
     },
   ],
+  findById: (id) => ai_scripts().ai_scripts.filter(m => m.id === id)[0],
+  eidt: (id, obj) => set((state) => {
+    return {
+      ai_scripts: state.ai_scripts.map(i => {
+      if (i.id === id) {
+        return {id, ...obj}
+      }
+      return i
+    })
+    }
+  }),
   add: (ai_script) =>
     set((state) => {
       let max_id = v4();

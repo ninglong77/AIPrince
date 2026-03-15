@@ -8,6 +8,7 @@ export default function AppRoutes() {
     <Routes>
       <Route index path="/" element={<Index />} />
       <Route path="/ai_scripts/new" element={<NewAiScript />} />
+      <Route path="/ai_scripts/edit/:editId" element={<NewAiScript />} />
       <Route path="/ui" element={<UI />} />
     </Routes>
   );

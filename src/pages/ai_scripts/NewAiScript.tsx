@@ -4,9 +4,10 @@ import { useAiScriptsStore } from "../../states/ai_scripts";
 import { useNotification } from "../../components/notification";
 
 export default function NewAiScript() {
+  // 分析当前是不是编辑模式：如果 URL 中有 editId 参数，则为编辑模式，否则为新增模式
   const { info, error } = useNotification();
   let navigate = useNavigate();
-  const { add } = useAiScriptsStore();
+  const { add, findById, eidt } = useAiScriptsStore();
   const { editId } = useParams() as { editId?: string };
   const [formData, setFormData] = useState({ name: "", content: "" });
   const handleInputChange = (
@@ -22,10 +23,27 @@ export default function NewAiScript() {
       error("Please fill in both name and content");
       return;
     }
-    add(formdata);
-    info("Successfully added new AiScript");
+    if (editId) {
+      eidt(editId, formdata);
+      info("Successfully edited AiScript");
+    } else {
+      add(formdata);
+      info("Successfully added new AiScript");
+    }
     navigate("/");
   };
+
+  useEffect(() => {
+    if (editId) {
+      const obj = findById(editId);
+      if (obj) {
+        setFormData({ name: obj.name, content: obj.content });
+      } else {
+        error("AiScript not found");
+        navigate("/");
+      }
+    }
+  }, [editId]);
 
   return (
     <div className="">
@@ -96,7 +114,9 @@ export default function NewAiScript() {
 
             {/* 关闭按钮 (小叉) */}
             <button
-              onClick={() => {}}
+              onClick={() => {
+                navigate("/");
+              }}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 cursor-pointer"
             >
               <svg

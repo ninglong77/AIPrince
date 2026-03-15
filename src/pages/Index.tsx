@@ -3,7 +3,7 @@ import { PrimaryButton } from '../components/buttons';
 import { SearchIcon } from '../components/icons';
 import { AiScript } from '../common';
 import { AiScriptItem, Pagtaion } from '../components/ai_scripts';
-import { NavLink } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 import { useAiScriptsStore } from '../states/ai_scripts';
 
 
@@ -15,6 +15,7 @@ import { useAiScriptsStore } from '../states/ai_scripts';
  */
 const AiScriptManager: React.FC = () => {
   const scripts = useAiScriptsStore((state) => state.ai_scripts);
+  const navigate = useNavigate();
   // 模拟初始数据
   const [scripts1, setScripts] = useState<AiScript[]>([    
   ]);
@@ -26,28 +27,11 @@ const AiScriptManager: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; // 每页显示5条
 
-  // 新增/编辑对话框相关状态
-  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: '', content: '' });
 
   // 删除确认对话框相关状态
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [scriptToDelete, setScriptToDelete] = useState<AiScript | null>(null);
 
-  // 打开新增对话框
-  const openAddModal = () => {
-    setFormData({ name: '', content: '' });
-    setEditId(null);
-    setIsFormModalOpen(true);
-  };
-
-  // 打开编辑对话框
-  const openEditModal = (script: AiScript) => {
-    setFormData({ name: script.name, content: script.content });
-    setEditId(script.id);
-    setIsFormModalOpen(true);
-  };
 
   // 打开删除确认对话框
   const openDeleteModal = (script: AiScript) => {
@@ -96,7 +80,7 @@ const AiScriptManager: React.FC = () => {
       {/* 顶部工具栏：新增按钮 + 搜索框 */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <NavLink to="/ai_scripts/new">
-          <PrimaryButton onClick={openAddModal}>+ 新增脚本</PrimaryButton>
+          <PrimaryButton>+ 新增脚本</PrimaryButton>
         </NavLink>
         <div className="relative w-full sm:w-72">
           <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
@@ -130,7 +114,9 @@ const AiScriptManager: React.FC = () => {
           <>
             <div className="space-y-3">
               {paginatedScripts.map((script) => (
-                <AiScriptItem script={script} onDelete={openDeleteModal} onEdit={openEditModal} />                
+                <AiScriptItem script={script} onDelete={openDeleteModal} onEdit={() => {
+                  navigate(`/ai_scripts/edit/${script.id}`);
+                }} />                
               ))}
             </div>
 
