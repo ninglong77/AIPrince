@@ -29,7 +29,8 @@ pub fn run() {
             greet,
             ai_scripts_cmd,
             remove_ai_script_cmd,
-            crate::ai_scripts::commands::add_ai_script_cmd
+            crate::ai_scripts::commands::add_ai_script_cmd,
+            crate::ai_scripts::commands::update_ai_script_cmd,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
