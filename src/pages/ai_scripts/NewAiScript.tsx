@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { NavLink, useNavigate, useParams } from "react-router";
 import { useAiScriptsStore } from "../../states/ai_scripts";
 import { useNotification } from "../../components/notification";
+import {v4} from 'uuid'
+import { add_ai_script } from "../../services/ai_scripts";
 
 export default function NewAiScript() {
   // 分析当前是不是编辑模式：如果 URL 中有 editId 参数，则为编辑模式，否则为新增模式
   const { info, error } = useNotification();
   let navigate = useNavigate();
-  const { add, findById, eidt } = useAiScriptsStore();
+  const { findById, eidt } = useAiScriptsStore();
   const { editId } = useParams() as { editId?: string };
   const [formData, setFormData] = useState({ name: "", content: "" });
   const handleInputChange = (
@@ -27,8 +29,14 @@ export default function NewAiScript() {
       eidt(editId, formdata);
       info("Successfully edited AiScript");
     } else {
-      add(formdata);
-      info("Successfully added new AiScript");
+      const uid = v4();
+      add_ai_script({ ...formdata, uuid: uid }).then(() => {
+        info("Successfully added new AiScript");
+      }).catch(e => {
+        error("Failed to add AiScript:"+e)
+      })
+      // add(formdata);
+      // info("Successfully added new AiScript");
     }
     navigate("/");
   };

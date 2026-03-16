@@ -1,6 +1,5 @@
 import { AiScript } from "../common";
 import { create } from "zustand";
-import { v4 } from "uuid";
 import { get_ai_scripts } from "../services/ai_scripts";
 
 interface ScriptObj {
@@ -10,7 +9,6 @@ interface ScriptObj {
 
 export interface AiScriptsStore {
   ai_scripts: AiScript[];
-  add: (item: ScriptObj) => void;
   findById: (id: string) => undefined | AiScript;
   eidt: (id: string, item: ScriptObj) => void;
   remove: (id: string) => void;
@@ -44,12 +42,5 @@ export const useAiScriptsStore = create<AiScriptsStore>((set, ai_scripts) => ({
       return {
         ai_scripts: state.ai_scripts.filter((i) => i.id !== id),
       };
-    }),
-  add: (ai_script) =>
-    set((state) => {
-      let max_id = v4();
-      return {
-        ai_scripts: [{ ...ai_script, id: max_id }, ...state.ai_scripts],
-      };
-    }),
+    })
 }));

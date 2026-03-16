@@ -5,3 +5,9 @@ export interface AiScript {
   name: string;
   content: string;
 }
+
+export interface NewAiScript {
+  name: string;
+  uuid: string;
+  content: string;
+}

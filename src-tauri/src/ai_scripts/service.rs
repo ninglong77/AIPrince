@@ -20,6 +20,15 @@ pub fn remove_ai_script(script_id: i32) -> bool {
         .is_ok()
 }
 
+pub fn add_ai_script(new_script: models::NewAiScript) -> bool {
+    use crate::schema::ai_scripts::dsl::*;
+    let connection = &mut crate::establish_connection();
+    diesel::insert_into(ai_scripts)
+        .values(&new_script)
+        .execute(connection)
+        .is_ok()
+}
+
 
 #[cfg(test)]
 mod tests {

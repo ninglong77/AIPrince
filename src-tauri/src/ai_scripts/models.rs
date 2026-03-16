@@ -13,3 +13,12 @@ pub struct AiScript {
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
+
+#[derive(Insertable, Serialize, Deserialize)]
+#[diesel(table_name = crate::schema::ai_scripts)]
+#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+pub struct NewAiScript {
+    pub uuid: String,
+    pub name: String,
+    pub content: String,
+}
