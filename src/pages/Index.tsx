@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PrimaryButton } from '../components/buttons';
 import { SearchIcon } from '../components/icons';
 import { AiScript } from '../common';
@@ -15,7 +15,7 @@ import { useAiScriptsStore } from '../states/ai_scripts';
  */
 const AiScriptManager: React.FC = () => {
   const scripts = useAiScriptsStore((state) => state.ai_scripts);
-  const { remove } = useAiScriptsStore();
+  const { remove, refresh } = useAiScriptsStore();
   const navigate = useNavigate();
 
   // 搜索关键词
@@ -69,6 +69,10 @@ const AiScriptManager: React.FC = () => {
       setCurrentPage(page);
     }
   };
+
+  useEffect(() => {
+    refresh();
+  }, [])
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-8">

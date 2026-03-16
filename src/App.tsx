@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 import { NavIcon } from "./components/icons";
 import { BrowserRouter } from "react-router";
 import AppRoutes from "./routes";
 import Sidebar from "./components/sidebar";
-import { NotificationContainer } from "./components/notification";
+import { NotificationContainer, useNotification } from "./components/notification";
+import { AiScript } from "./common";
 
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
   const [name, setName] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const notification = useNotification()
 
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/

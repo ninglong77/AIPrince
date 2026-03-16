@@ -1,3 +1,20 @@
+mod ai_scripts;
+mod schema;
+
+use diesel::prelude::*;
+use dotenvy::dotenv;
+use std::env;
+
+use crate::ai_scripts::commands::ai_scripts_cmd;
+
+pub fn establish_connection() -> SqliteConnection {
+    dotenv().ok();
+
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    SqliteConnection::establish(&database_url)
+        .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
+}
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -8,7 +25,7 @@ fn greet(name: &str) -> String {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, ai_scripts_cmd])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
