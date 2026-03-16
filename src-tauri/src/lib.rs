@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use dotenvy::dotenv;
 use std::env;
 
-use crate::ai_scripts::commands::ai_scripts_cmd;
+use crate::ai_scripts::commands::{ai_scripts_cmd, remove_ai_script_cmd};
 
 pub fn establish_connection() -> SqliteConnection {
     dotenv().ok();
@@ -25,7 +25,11 @@ fn greet(name: &str) -> String {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, ai_scripts_cmd])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            ai_scripts_cmd,
+            remove_ai_script_cmd
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

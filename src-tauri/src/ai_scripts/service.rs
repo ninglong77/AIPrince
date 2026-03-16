@@ -1,4 +1,4 @@
-use diesel::{query_dsl::methods::OrderDsl, ExpressionMethods, RunQueryDsl};
+use diesel::{ExpressionMethods, RunQueryDsl, query_dsl::methods::OrderDsl};
 
 use crate::ai_scripts::models;
 
@@ -9,6 +9,15 @@ pub fn list_ai_scripts() -> Vec<models::AiScript> {
         .order(created_at.desc())
         .load::<models::AiScript>(connection)
         .expect("Error loading AI scripts")
+}
+
+pub fn remove_ai_script(script_id: i32) -> bool {
+    use crate::schema::ai_scripts::dsl::*;
+    use diesel::QueryDsl;
+    let connection = &mut crate::establish_connection();
+    diesel::delete(ai_scripts.filter(id.eq(script_id)))
+        .execute(connection)
+        .is_ok()
 }
 
 

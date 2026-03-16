@@ -5,6 +5,8 @@ import { AiScript } from '../common';
 import { AiScriptItem, Pagtaion } from '../components/ai_scripts';
 import { NavLink, useNavigate } from 'react-router';
 import { useAiScriptsStore } from '../states/ai_scripts';
+import { remove_ai_script } from '../services/ai_scripts';
+import { useNotification } from '../components/notification';
 
 
 /**
@@ -15,8 +17,9 @@ import { useAiScriptsStore } from '../states/ai_scripts';
  */
 const AiScriptManager: React.FC = () => {
   const scripts = useAiScriptsStore((state) => state.ai_scripts);
-  const { remove, refresh } = useAiScriptsStore();
+  const { refresh } = useAiScriptsStore();
   const navigate = useNavigate();
+  const notification = useNotification();
 
   // 搜索关键词
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,8 +49,14 @@ const AiScriptManager: React.FC = () => {
   // 确认删除
   const confirmDelete = () => {
     if (scriptToDelete) {
-      remove(scriptToDelete.id);
-      closeDeleteModal();
+      remove_ai_script(scriptToDelete.id as any).then(() => {
+        closeDeleteModal();
+        refresh().then(() => {
+          notification.success("Successfully deleted AiScript")
+        });
+      }).catch(e => {
+        notification.error("Failed to delete AiScript:"+e)
+      });
     }
   };
 

@@ -5,3 +5,8 @@ export async function get_ai_scripts() {
     const scripts = await invoke("ai_scripts_cmd") as AiScript[];
     return scripts
 }
+
+export async function remove_ai_script(id: number) {
+    const r = await invoke('remove_ai_script_cmd', {scriptId: id})
+    return r
+}
