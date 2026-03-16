@@ -1,8 +1,9 @@
 
 // 剧本
 export interface AiScript {
-  id: string;
+  id: number;
   name: string;
+  uuid: string;
   content: string;
 }
 

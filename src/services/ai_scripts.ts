@@ -15,3 +15,8 @@ export async function add_ai_script(new_script: NewAiScript) {
     const r = await invoke('add_ai_script_cmd', {newScript: new_script})
     return r
 }
+
+export async function update_ai_script(id: number, script: NewAiScript) {
+    const r = await invoke('update_ai_script_cmd', {scriptId: id, updatedScript: script})
+    return r
+}

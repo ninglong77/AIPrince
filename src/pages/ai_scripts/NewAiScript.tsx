@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import { NavLink, useNavigate, useParams } from "react-router";
 import { useAiScriptsStore } from "../../states/ai_scripts";
 import { useNotification } from "../../components/notification";
-import {v4} from 'uuid'
-import { add_ai_script } from "../../services/ai_scripts";
+import { v4 } from "uuid";
+import { add_ai_script, update_ai_script } from "../../services/ai_scripts";
 
 export default function NewAiScript() {
   // 分析当前是不是编辑模式：如果 URL 中有 editId 参数，则为编辑模式，否则为新增模式
   const { info, error } = useNotification();
   let navigate = useNavigate();
-  const { findById, eidt } = useAiScriptsStore();
+  const { findById } = useAiScriptsStore();
   const { editId } = useParams() as { editId?: string };
+  const [id, setId] = useState<number | null>(null);
   const [formData, setFormData] = useState({ name: "", content: "" });
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -25,16 +26,28 @@ export default function NewAiScript() {
       error("Please fill in both name and content");
       return;
     }
-    if (editId) {
-      eidt(editId, formdata);
-      info("Successfully edited AiScript");
+    if (id) {
+      const obj = findById(id);
+      if (!obj) {
+        error("AiScript not found");
+        return;
+      }
+      update_ai_script(id, { ...formData, uuid: obj.uuid })
+        .then(() => {
+          info("Successfully edited AiScript");
+        })
+        .catch((e) => {
+          error("Failed to edit AiScript:" + e);
+        });
     } else {
       const uid = v4();
-      add_ai_script({ ...formdata, uuid: uid }).then(() => {
-        info("Successfully added new AiScript");
-      }).catch(e => {
-        error("Failed to add AiScript:"+e)
-      })
+      add_ai_script({ ...formdata, uuid: uid })
+        .then(() => {
+          info("Successfully added new AiScript");
+        })
+        .catch((e) => {
+          error("Failed to add AiScript:" + e);
+        });
       // add(formdata);
       // info("Successfully added new AiScript");
     }
@@ -43,15 +56,20 @@ export default function NewAiScript() {
 
   useEffect(() => {
     if (editId) {
-      const obj = findById(editId);
-      if (obj) {
-        setFormData({ name: obj.name, content: obj.content });
-      } else {
-        error("AiScript not found");
-        navigate("/");
-      }
+      setId(parseInt(editId));
     }
   }, [editId]);
+
+  useEffect(() => {
+    if (!id) return;
+    const obj = findById(id);
+    if (obj) {
+      setFormData({ name: obj.name, content: obj.content });
+    } else {
+      error("AiScript not found");
+      navigate("/");
+    }
+  }, [id]);
 
   return (
     <div className="">
