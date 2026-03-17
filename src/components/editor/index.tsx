@@ -1,7 +1,9 @@
 import { useCallback, useState } from "react";
-import { createEditor, Transforms, Element, Editor } from "slate";
-import { Editable, Slate, withReact } from "slate-react";
+import { createEditor, Transforms, Element, Editor, BaseEditor } from "slate";
+import { Editable, ReactEditor, Slate, withReact } from "slate-react";
 import { useNotification } from "../notification";
+
+type EditorType = BaseEditor & ReactEditor;
 
 const initialValue = [
   {
@@ -82,6 +84,77 @@ const Leaf = (props: any) => {
   );
 };
 
+const CustomHelper = {
+  // 判断当前选区是否在代码块中
+  isCodeBlockActive(editor: EditorType) {
+    const [match] = Editor.nodes(editor, {
+      match: (n) => (n as any).type === "code",
+    });
+
+    return !!match;
+  },
+  // 切换代码块
+  toggleCodeBlock(editor: EditorType) {
+    const isActive = CustomHelper.isCodeBlockActive(editor);
+    Transforms.setNodes(editor, { type: isActive ? null : "code" } as any, {
+      match: (n) => Element.isElement(n) && Editor.isBlock(editor, n),
+    });
+  },
+  // 在当前行插入一个新的段落
+  newLine(editor: EditorType) {
+    Transforms.insertNodes(
+      editor,
+      { type: "paragraph", children: [{ text: "" }] } as any,
+      {
+        match: (n) => Element.isElement(n) && Editor.isBlock(editor, n),
+      },
+    );
+  },
+  toggleByTrigger(editor: EditorType, target: string) {
+    const mapping: {
+      type: "element" | "style";
+      key: string;
+      trigger: string;
+    }[] = [
+      { type: "element", key: "code", trigger: "`" },
+      { type: "element", key: "title1", trigger: "1" },
+      { type: "element", key: "title2", trigger: "2" },
+      { type: "element", key: "title3", trigger: "3" },
+      { type: "style", key: "bold", trigger: "b" },
+      { type: "style", key: "italic", trigger: "i" },
+      { type: "style", key: "underline", trigger: "u" },
+      { type: "style", key: "lineThrough", trigger: "l" },
+    ];
+    for (const { type, key, trigger } of mapping) {
+      if (target.toLowerCase() === trigger) {
+        if (type === "element") {
+          const [match] = Editor.nodes(editor, {
+            match: (n) => (n as any).type === key,
+          });
+          Transforms.setNodes(
+            editor,
+            { type: match ? "paragraph" : key } as any,
+            {
+              match: (n) => Element.isElement(n) && Editor.isBlock(editor, n),
+            },
+          );
+        } else if (type === "style") {
+          const [match] = Editor.nodes(editor, {
+            match: (n) => (n as any)[key],
+          });
+          if (match) {
+            Editor.removeMark(editor, key);
+          } else {
+            Editor.addMark(editor, key, true);
+          }
+        }
+        return true;
+      }
+    }
+    return false;
+  },
+};
+
 export function MyEditor() {
   const [editor] = useState(() => withReact(createEditor()));
   const notifaction = useNotification();
@@ -125,17 +198,7 @@ export function MyEditor() {
           <button
             onMouseDown={(event) => {
               event.preventDefault();
-              const [match] = Editor.nodes(editor, {
-                match: (n) => (n as any).type === "code",
-              });
-              Transforms.setNodes(
-                editor,
-                { type: match ? "paragraph" : "code" } as any,
-                {
-                  match: (n) =>
-                    Element.isElement(n) && Editor.isBlock(editor, n),
-                },
-              );
+              CustomHelper.toggleCodeBlock(editor);
             }}
             className="px-1 rounded hover:bg-slate-700/50"
           >
@@ -152,7 +215,7 @@ export function MyEditor() {
               // 如果同时按下了 shift 键，则强制换行，不退出代码块
               if (!event.shiftKey) {
                 const [match] = Editor.nodes(editor, {
-                  match: (n) => (n as any).type in ["code"],
+                  match: (n) => (n as any).type === "code",
                 });
                 if (match) {
                   const [node] = match;
@@ -177,61 +240,15 @@ export function MyEditor() {
               if (match) {
                 // 强制换行
                 event.preventDefault();
-                Transforms.insertNodes(
-                  editor,
-                  { type: "paragraph", children: [{ text: "" }] } as any,
-                  {
-                    match: (n) =>
-                      Element.isElement(n) && Editor.isBlock(editor, n),
-                  },
-                );
+                CustomHelper.newLine(editor);
                 return;
               }
             }
             if (!event.ctrlKey) {
               return;
             }
-            const mapping: {
-              type: "element" | "style";
-              key: string;
-              trigger: string;
-            }[] = [
-              { type: "element", key: "code", trigger: "`" },
-              { type: "element", key: "title1", trigger: "1" },
-              { type: "element", key: "title2", trigger: "2" },
-              { type: "element", key: "title3", trigger: "3" },
-              { type: "style", key: "bold", trigger: "b" },
-              { type: "style", key: "italic", trigger: "i" },
-              { type: "style", key: "underline", trigger: "u" },
-              { type: "style", key: "lineThrough", trigger: "l" },
-            ];
-            for (const { type, key, trigger } of mapping) {
-              if (event.key.toLowerCase() === trigger) {
-                event.preventDefault();
-                if (type === "element") {
-                  const [match] = Editor.nodes(editor, {
-                    match: (n) => (n as any).type === key,
-                  });
-                  Transforms.setNodes(
-                    editor,
-                    { type: match ? "paragraph" : key } as any,
-                    {
-                      match: (n) =>
-                        Element.isElement(n) && Editor.isBlock(editor, n),
-                    },
-                  );
-                } else if (type === "style") {
-                  const [match] = Editor.nodes(editor, {
-                    match: (n) => (n as any)[key],
-                  });
-                  if (match) {
-                    Editor.removeMark(editor, key);
-                  } else {
-                    Editor.addMark(editor, key, true);
-                  }
-                }
-                return;
-              }
+            if (CustomHelper.toggleByTrigger(editor, event.key)) {
+              event.preventDefault();
             }
           }}
         />
