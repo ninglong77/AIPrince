@@ -30,14 +30,51 @@ const DefaultElement = (props: any) => {
   );
 };
 
+const Title1Element = (props: any) => {
+  return (
+    <h1 className="text-2xl font-bold text-blue-700" {...props.attributes}>
+      {props.children}
+    </h1>
+  );
+}
+
+const Title2Element = (props: any) => {
+  return (
+    <h2 className="text-xl font-bold text-blue-600" {...props.attributes}>
+      {props.children}
+    </h2>
+  );
+}
+
+const Title3Element = (props: any) => {
+  return (
+    <h3 className="text-lg font-bold text-blue-500" {...props.attributes}>
+      {props.children}
+    </h3>
+  );
+}
+
 // Define a React component to render leaves with bold text.
 const Leaf = (props: any) => {
+  let text_decoration = "none";
+   if (props.leaf.underline) {
+     text_decoration = "underline";
+   }
+   if (props.leaf.lineThrough) {
+     text_decoration = "line-through";
+   }
+   if (props.leaf.underline && props.leaf.lineThrough) {
+     text_decoration = "underline line-through";
+   }
   return (
     <span
       {...props.attributes}
       style={{
         fontWeight: props.leaf.bold ? "bold" : "normal",
         fontStyle: props.leaf.italic ? "italic" : "normal",
+        textDecoration: text_decoration,
+        textDecorationColor: props.leaf.underline ? "black" : "transparent",
+        textUnderlineOffset: props.leaf.underline ? "1px" : "0",
       }}
     >
       {props.children}
@@ -52,6 +89,12 @@ export function MyEditor() {
     switch (props.element.type) {
       case "code":
         return <CodeElement {...props} />;
+      case "title1":
+        return <Title1Element {...props} />;
+      case "title2":
+        return <Title2Element {...props} />;
+      case "title3":
+        return <Title3Element {...props} />;
       default:
         return <DefaultElement {...props} />;
     }
@@ -72,7 +115,7 @@ export function MyEditor() {
             // 如果同时按下了 shift 键，则强制换行，不退出代码块
             if (!event.shiftKey) {
               const [match] = Editor.nodes(editor, {
-                match: (n) => (n as any).type === "code",
+                match: (n) => (n as any).type in ["code"],
               });
               if (match) {
                 const [node] = match;
@@ -87,52 +130,66 @@ export function MyEditor() {
                 }
               }
             }
-          }
-          if (!event.ctrlKey) {
-            return;
-          }
-          switch (event.key) {
-            // When "`" is pressed, keep our existing code block logic.
-            case "`": {
+            // 如果当前行是标题，则退出标题
+            const [match] = Editor.nodes(editor, {
+              match: (n) =>
+                (n as any).type === "title1" ||
+                (n as any).type === "title2" ||
+                (n as any).type === "title3",
+            });
+            if (match) {
+              // 强制换行
               event.preventDefault();
-              const [match] = Editor.nodes(editor, {
-                match: (n) => (n as any).type === "code",
-              });
-              Transforms.setNodes(
+              Transforms.insertNodes(
                 editor,
-                { type: match ? "paragraph" : "code" } as any,
+                { type: "paragraph", children: [{ text: "" }] } as any,
                 {
                   match: (n) =>
                     Element.isElement(n) && Editor.isBlock(editor, n),
                 },
               );
-              break;
+              return;
             }
-            // When "B" is pressed, bold the text in the selection.
-            case "b": {
+          }
+          if (!event.ctrlKey) {
+            return;
+          }
+          const mapping: { type: 'element'|'style', key: string, trigger: string }[] = [
+            { type: 'element', key: 'code', trigger: '`' },
+            { type: 'element', key: 'title1', trigger: '1' },
+            { type: 'element', key: 'title2', trigger: '2' },
+            { type: 'element', key: 'title3', trigger: '3' },
+            { type: 'style', key: 'bold', trigger: 'b' },
+            { type: 'style', key: 'italic', trigger: 'i' },
+            { type: 'style', key: 'underline', trigger: 'u' },
+            { type: 'style', key: 'lineThrough', trigger: 'l' },
+          ]
+          for (const { type, key, trigger } of mapping) {
+            if (event.key.toLowerCase() === trigger) {
               event.preventDefault();
-              const [match] = Editor.nodes(editor, {
-                match: (n) => (n as any).bold,
-              });
-              if (match) {
-                Editor.removeMark(editor, "bold");
-              } else {
-                Editor.addMark(editor, "bold", true);
+              if (type === 'element') {
+                const [match] = Editor.nodes(editor, {
+                  match: (n) => (n as any).type === key,
+                });
+                Transforms.setNodes(
+                  editor,
+                  { type: match ? "paragraph" : key } as any,
+                  {
+                    match: (n) =>
+                      Element.isElement(n) && Editor.isBlock(editor, n),
+                  },
+                );
+              } else if (type === 'style') {
+                const [match] = Editor.nodes(editor, {
+                  match: (n) => (n as any)[key],
+                });
+                if (match) {
+                  Editor.removeMark(editor, key);
+                } else {
+                  Editor.addMark(editor, key, true);
+                }
               }
-              break;
-            }
-            // When "I" is pressed, italic the text in the selection.
-            case "i": {
-              event.preventDefault();
-              const [match] = Editor.nodes(editor, {
-                match: (n) => (n as any).italic,
-              });
-              if (match) {
-                Editor.removeMark(editor, "italic");
-              } else {
-                Editor.addMark(editor, "italic", true);
-              }
-              break;
+              return;
             }
           }
         }}
