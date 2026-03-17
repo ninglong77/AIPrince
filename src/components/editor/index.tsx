@@ -35,7 +35,10 @@ const Leaf = (props: any) => {
   return (
     <span
       {...props.attributes}
-      style={{ fontWeight: props.leaf.bold ? "bold" : "normal" }}
+      style={{
+        fontWeight: props.leaf.bold ? "bold" : "normal",
+        fontStyle: props.leaf.italic ? "italic" : "normal",
+      }}
     >
       {props.children}
     </span>
@@ -115,6 +118,19 @@ export function MyEditor() {
                 Editor.removeMark(editor, "bold");
               } else {
                 Editor.addMark(editor, "bold", true);
+              }
+              break;
+            }
+            // When "I" is pressed, italic the text in the selection.
+            case "i": {
+              event.preventDefault();
+              const [match] = Editor.nodes(editor, {
+                match: (n) => (n as any).italic,
+              });
+              if (match) {
+                Editor.removeMark(editor, "italic");
+              } else {
+                Editor.addMark(editor, "italic", true);
               }
               break;
             }
