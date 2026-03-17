@@ -7,6 +7,7 @@ import { NavLink, useNavigate } from 'react-router';
 import { useAiScriptsStore } from '../states/ai_scripts';
 import { remove_ai_script } from '../services/ai_scripts';
 import { useNotification } from '../components/notification';
+import { MyEditor } from '../components/editor';
 
 
 /**
@@ -87,6 +88,9 @@ const AiScriptManager: React.FC = () => {
     <div className="p-6 max-w-4xl mx-auto space-y-8">
       {/* 页面标题 */}
       <h1 className="text-2xl font-bold text-gray-800">AiScript 管理</h1>
+      <div className='p-1'>
+        <MyEditor />
+      </div>
 
       {/* 顶部工具栏：新增按钮 + 搜索框 */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
