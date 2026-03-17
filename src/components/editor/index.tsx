@@ -36,7 +36,7 @@ const Title1Element = (props: any) => {
       {props.children}
     </h1>
   );
-}
+};
 
 const Title2Element = (props: any) => {
   return (
@@ -44,7 +44,7 @@ const Title2Element = (props: any) => {
       {props.children}
     </h2>
   );
-}
+};
 
 const Title3Element = (props: any) => {
   return (
@@ -52,20 +52,20 @@ const Title3Element = (props: any) => {
       {props.children}
     </h3>
   );
-}
+};
 
 // Define a React component to render leaves with bold text.
 const Leaf = (props: any) => {
   let text_decoration = "none";
-   if (props.leaf.underline) {
-     text_decoration = "underline";
-   }
-   if (props.leaf.lineThrough) {
-     text_decoration = "line-through";
-   }
-   if (props.leaf.underline && props.leaf.lineThrough) {
-     text_decoration = "underline line-through";
-   }
+  if (props.leaf.underline) {
+    text_decoration = "underline";
+  }
+  if (props.leaf.lineThrough) {
+    text_decoration = "line-through";
+  }
+  if (props.leaf.underline && props.leaf.lineThrough) {
+    text_decoration = "underline line-through";
+  }
   return (
     <span
       {...props.attributes}
@@ -104,96 +104,138 @@ export function MyEditor() {
     return <Leaf {...props} />;
   }, []);
   return (
-    <Slate editor={editor} initialValue={initialValue}>
-      <Editable
-        className="border border-slate-100/10 p-2 rounded-md outline-0"
-        renderElement={renderElement}
-        renderLeaf={renderLeaf}
-        onKeyDown={(event) => {
-          // 如果用户按下回车键，而当前处于编辑代码状态，当前行为空行，则退出代码块
-          if (event.key === "Enter") {
-            // 如果同时按下了 shift 键，则强制换行，不退出代码块
-            if (!event.shiftKey) {
-              const [match] = Editor.nodes(editor, {
-                match: (n) => (n as any).type in ["code"],
-              });
-              if (match) {
-                const [node] = match;
-                const text = (node as any).children[0].text;
-                if (text === "") {
-                  event.preventDefault();
-                  Transforms.setNodes(editor, { type: "paragraph" } as any, {
-                    match: (n) =>
-                      Element.isElement(n) && Editor.isBlock(editor, n),
-                  });
-                  return;
-                }
-              }
-            }
-            // 如果当前行是标题，则退出标题
-            const [match] = Editor.nodes(editor, {
-              match: (n) =>
-                (n as any).type === "title1" ||
-                (n as any).type === "title2" ||
-                (n as any).type === "title3",
-            });
-            if (match) {
-              // 强制换行
+    <Slate
+      editor={editor}
+      initialValue={initialValue}
+      onChange={(value) => {
+        const isAstChange = editor.operations.some(
+          (op) => "set_selection" !== op.type,
+        );
+        if (isAstChange) {
+          // Save the value to Local Storage.
+          const content = JSON.stringify(value);
+          // localStorage.setItem('content', content)
+          console.log("Content was updated:", content);
+        }
+      }}
+    >
+      <div className="border border-slate-100/10 p-2 rounded-md">
+        {/** Toolbar */}
+        <div className="flex gap-1 mb-2">
+          <button
+            onMouseDown={(event) => {
               event.preventDefault();
-              Transforms.insertNodes(
+              const [match] = Editor.nodes(editor, {
+                match: (n) => (n as any).type === "code",
+              });
+              Transforms.setNodes(
                 editor,
-                { type: "paragraph", children: [{ text: "" }] } as any,
+                { type: match ? "paragraph" : "code" } as any,
                 {
                   match: (n) =>
                     Element.isElement(n) && Editor.isBlock(editor, n),
                 },
               );
-              return;
-            }
-          }
-          if (!event.ctrlKey) {
-            return;
-          }
-          const mapping: { type: 'element'|'style', key: string, trigger: string }[] = [
-            { type: 'element', key: 'code', trigger: '`' },
-            { type: 'element', key: 'title1', trigger: '1' },
-            { type: 'element', key: 'title2', trigger: '2' },
-            { type: 'element', key: 'title3', trigger: '3' },
-            { type: 'style', key: 'bold', trigger: 'b' },
-            { type: 'style', key: 'italic', trigger: 'i' },
-            { type: 'style', key: 'underline', trigger: 'u' },
-            { type: 'style', key: 'lineThrough', trigger: 'l' },
-          ]
-          for (const { type, key, trigger } of mapping) {
-            if (event.key.toLowerCase() === trigger) {
-              event.preventDefault();
-              if (type === 'element') {
+            }}
+            className="px-1 rounded hover:bg-slate-700/50"
+          >
+            code
+          </button>
+        </div>
+        <Editable
+          className="outline-0"
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+          onKeyDown={(event) => {
+            // 如果用户按下回车键，而当前处于编辑代码状态，当前行为空行，则退出代码块
+            if (event.key === "Enter") {
+              // 如果同时按下了 shift 键，则强制换行，不退出代码块
+              if (!event.shiftKey) {
                 const [match] = Editor.nodes(editor, {
-                  match: (n) => (n as any).type === key,
+                  match: (n) => (n as any).type in ["code"],
                 });
-                Transforms.setNodes(
+                if (match) {
+                  const [node] = match;
+                  const text = (node as any).children[0].text;
+                  if (text === "") {
+                    event.preventDefault();
+                    Transforms.setNodes(editor, { type: "paragraph" } as any, {
+                      match: (n) =>
+                        Element.isElement(n) && Editor.isBlock(editor, n),
+                    });
+                    return;
+                  }
+                }
+              }
+              // 如果当前行是标题，则退出标题
+              const [match] = Editor.nodes(editor, {
+                match: (n) =>
+                  (n as any).type === "title1" ||
+                  (n as any).type === "title2" ||
+                  (n as any).type === "title3",
+              });
+              if (match) {
+                // 强制换行
+                event.preventDefault();
+                Transforms.insertNodes(
                   editor,
-                  { type: match ? "paragraph" : key } as any,
+                  { type: "paragraph", children: [{ text: "" }] } as any,
                   {
                     match: (n) =>
                       Element.isElement(n) && Editor.isBlock(editor, n),
                   },
                 );
-              } else if (type === 'style') {
-                const [match] = Editor.nodes(editor, {
-                  match: (n) => (n as any)[key],
-                });
-                if (match) {
-                  Editor.removeMark(editor, key);
-                } else {
-                  Editor.addMark(editor, key, true);
-                }
+                return;
               }
+            }
+            if (!event.ctrlKey) {
               return;
             }
-          }
-        }}
-      />
+            const mapping: {
+              type: "element" | "style";
+              key: string;
+              trigger: string;
+            }[] = [
+              { type: "element", key: "code", trigger: "`" },
+              { type: "element", key: "title1", trigger: "1" },
+              { type: "element", key: "title2", trigger: "2" },
+              { type: "element", key: "title3", trigger: "3" },
+              { type: "style", key: "bold", trigger: "b" },
+              { type: "style", key: "italic", trigger: "i" },
+              { type: "style", key: "underline", trigger: "u" },
+              { type: "style", key: "lineThrough", trigger: "l" },
+            ];
+            for (const { type, key, trigger } of mapping) {
+              if (event.key.toLowerCase() === trigger) {
+                event.preventDefault();
+                if (type === "element") {
+                  const [match] = Editor.nodes(editor, {
+                    match: (n) => (n as any).type === key,
+                  });
+                  Transforms.setNodes(
+                    editor,
+                    { type: match ? "paragraph" : key } as any,
+                    {
+                      match: (n) =>
+                        Element.isElement(n) && Editor.isBlock(editor, n),
+                    },
+                  );
+                } else if (type === "style") {
+                  const [match] = Editor.nodes(editor, {
+                    match: (n) => (n as any)[key],
+                  });
+                  if (match) {
+                    Editor.removeMark(editor, key);
+                  } else {
+                    Editor.addMark(editor, key, true);
+                  }
+                }
+                return;
+              }
+            }
+          }}
+        />
+      </div>
     </Slate>
   );
 }
