@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { createEditor, Transforms, Element, Editor } from "slate";
+import { Children, useCallback, useEffect, useState } from "react";
+import { createEditor, Transforms, Element, Editor, Text } from "slate";
 import { Editable, Slate, withReact } from "slate-react";
 import { useNotification } from "../notification";
 import {
@@ -29,6 +29,9 @@ const initialValue = [
 
 // Define a React component to render leaves with bold text.
 const Leaf = (props: any) => {
+  if (props.leaf.role) {
+    return <RoleElement {...props} />;
+  }
   let text_decoration = "none";
   if (props.leaf.underline) {
     text_decoration = "underline";
@@ -137,6 +140,24 @@ export function MyEditor() {
           renderElement={renderElement}
           renderLeaf={renderLeaf}
           onKeyDown={(event) => {
+            // 如果当前是 role，并且用户按下了空格键或者：或者:，移除 role mark
+            if (event.key === " " || event.key === ":") {
+              const [match] = Editor.nodes(editor, {
+                match: (n) => (n as any).role,
+              });
+              if (match) {
+                const [node] = match;
+                const text = (node as any).text;
+                event.preventDefault();
+                Transforms.insertText(editor, '');
+                Editor.removeMark(editor, "role");
+                if (Text.isText(node) && text.includes("：")) {
+                  // remove ：and update the node text
+                  // TODO 处理中文冒号情况
+                }
+                return
+              }
+            }
             // 如果用户按下回车键，而当前处于编辑代码状态，当前行为空行，则退出代码块
             if (event.key === "Enter") {
               // 如果同时按下了 shift 键，则强制换行，不退出代码块
@@ -182,7 +203,7 @@ export function MyEditor() {
                     Element.isElement(n) && Editor.isBlock(editor, n),
                 });
                 return;
-              }
+              }              
             }
             if (!event.ctrlKey) {
               return;

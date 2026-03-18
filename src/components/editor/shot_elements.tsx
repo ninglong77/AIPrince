@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNotification } from "../notification";
-import { ShotIcon } from "../icons";
+import { RoleIcon, ShotIcon } from "../icons";
 
 
 export const ShotElement = (props: any) => {
@@ -30,9 +30,10 @@ export const ShotElement = (props: any) => {
 
 export const RoleElement = (props: any) => {
   return (
-    <div className="border border-yellow-500 bg-yellow-50 p-2" {...props.attributes}>
+    <span className="text-yellow-500 px-1 font-bold" {...props.attributes}>
+      <span style={{height: 16, width: 16}} className="inline-block"><RoleIcon /></span>
       {props.children}
-    </div>
+    </span>
   );
 }
 

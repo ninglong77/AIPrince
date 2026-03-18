@@ -46,7 +46,7 @@ export const CustomHelper = {
       { type: "style", key: "underline", trigger: "u" },
       { type: "style", key: "lineThrough", trigger: "l" },
       { type: "element", key: "shot", trigger: "shot" },
-      { type: "element", key: "role", trigger: "role" },
+      { type: "style", key: "role", trigger: "role" },
       { type: "element", key: "action", trigger: "action" },
       { type: "element", key: "background", trigger: "background" },
       { type: "element", key: "dialog", trigger: "dialog" },
