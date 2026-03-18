@@ -1,9 +1,29 @@
+import { useEffect, useState } from "react";
+import { useNotification } from "../notification";
+import { ShotIcon } from "../icons";
 
 
 export const ShotElement = (props: any) => {
+  const node = props.element as any;
+  const [content, setContent] = useState("");
+  const notification = useNotification();
+  useEffect(() => {
+    setContent(JSON.stringify(node))
+  }, [props])
+  useEffect(() => {
+    if(content){
+      // notification.info("Shot content updated: " + content);
+    }
+  }, [content])
   return (
-    <div className="border border-green-500 bg-green-50 p-2" {...props.attributes}>
-      {props.children}
+    <div className="border border-slate-100 bg-white relative shadow-sm" {...props.attributes}>
+      <div style={{left: -25, zIndex: 50, top: '5%'}} className="absolute bg-white border-l border-slate-300 rounded-l-2xl p-1">
+        <ShotIcon />
+      </div>
+      {/* <div>Shot {content}</div> */}
+      <div className="p-2">
+        {props.children}
+      </div>
     </div>
   );
 }

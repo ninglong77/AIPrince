@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createEditor, Transforms, Element, Editor } from "slate";
 import { Editable, Slate, withReact } from "slate-react";
 import { useNotification } from "../notification";
@@ -18,7 +18,7 @@ import {
 } from "./shot_elements";
 import { CustomHelper } from "./helper";
 import Toolbar from "./toolbar";
-import { EditorType } from "./types";
+import { ContentNode, EditorType } from "./types";
 
 const initialValue = [
   {
@@ -79,6 +79,12 @@ const withCodeBlock = (editor: EditorType) => {
 export function MyEditor() {
   const [editor] = useState(() => withCodeBlock(withReact(createEditor())));
   const notifaction = useNotification();
+  const [content, setContent] = useState<ContentNode[]>(
+    initialValue as ContentNode[],
+  );
+  useEffect(() => {
+    // notifaction.info("Editor content updated: " + content);
+  }, [content]);
   const renderElement = useCallback((props: any) => {
     switch (props.element.type) {
       case "code":
@@ -90,7 +96,7 @@ export function MyEditor() {
       case "title3":
         return <Title3Element {...props} />;
       case "shot":
-        return <ShotElement {...props} />;
+        return <ShotElement shot_seq={1} {...props} />;
       case "role":
         return <RoleElement {...props} />;
       case "action":
@@ -117,9 +123,7 @@ export function MyEditor() {
         );
         if (isAstChange) {
           // Save the value to Local Storage.
-          const content = JSON.stringify(value);
-          // localStorage.setItem('content', content)
-          console.log("Content was updated:", content);
+          setContent(value as ContentNode[]);
         }
       }}
     >
@@ -173,6 +177,11 @@ export function MyEditor() {
               if (shotMatch && event.shiftKey) {
                 event.preventDefault();
                 CustomHelper.newLine(editor);
+                Transforms.setNodes(editor, { type: "paragraph" } as any, {
+                  match: (n) =>
+                    Element.isElement(n) && Editor.isBlock(editor, n),
+                });
+                return;
               }
             }
             if (!event.ctrlKey) {
