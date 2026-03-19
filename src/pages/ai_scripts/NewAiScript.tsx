@@ -75,6 +75,7 @@ export default function NewAiScript() {
     const obj = findById(id);
     if (obj) {
       setFormData({ name: obj.name, content: obj.content });
+      
       setInitialData(
         !!obj.content
           ? JSON.parse(obj.content)
@@ -133,6 +134,7 @@ export default function NewAiScript() {
                 >
                   内容
                 </label>
+                {/* {inited && <div>{JSON.stringify(initialData)}</div>} */}
                 <div className="p-1">
                   {(!editId || (!!editId && inited)) && (
                     <MyEditor

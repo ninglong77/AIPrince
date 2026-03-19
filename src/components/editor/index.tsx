@@ -19,12 +19,12 @@ import { CustomHelper } from "./helper";
 import Toolbar from "./toolbar";
 import { ContentNode, EditorType } from "./types";
 
-const initialValue1 = [
-  {
-    type: "paragraph",
-    children: [{ text: "A line of text in a paragraph." }],
-  },
-];
+// const initialValue1 = [
+//   {
+//     type: "paragraph",
+//     children: [{ text: "A line of text in a paragraph." }],
+//   },
+// ];
 
 // Define a React component to render leaves with bold text.
 const Leaf = (props: any) => {
@@ -87,11 +87,17 @@ const withCodeBlock = (editor: EditorType) => {
   return editor;
 };
 
-export function MyEditor({initialValue, onChange}: {initialValue: ContentNode[], onChange?: (content: ContentNode[]) => void}) {
+export function MyEditor({
+  initialValue,
+  onChange,
+}: {
+  initialValue: ContentNode[];
+  onChange?: (content: ContentNode[]) => void;
+}) {
   const [editor] = useState(() => withCodeBlock(withReact(createEditor())));
-  const [content, setContent] = useState<ContentNode[]>([]);
+  const [content, setContent] = useState<ContentNode[]>(initialValue);
   useEffect(() => {
-    onChange && onChange(content)
+    onChange && onChange(content);
   }, [content]);
   const renderElement = useCallback((props: any) => {
     switch (props.element.type) {
@@ -146,8 +152,12 @@ export function MyEditor({initialValue, onChange}: {initialValue: ContentNode[],
           renderElement={renderElement}
           renderLeaf={renderLeaf}
           onKeyDown={(event) => {
-            // 如果当前是 role，并且用户按下了空格键或者：或者:，移除 role mark
-            if (event.key === " " || event.key === ":") {
+            // 如果当前是 role，并且用户按下了换行符符空格键或者：或者:，移除 role mark
+            if (
+              event.key === " " ||
+              event.key === ":" ||
+              event.key === "Enter"
+            ) {
               const [match] = Editor.nodes(editor, {
                 match: (n) => (n as any).role,
               });
@@ -155,13 +165,13 @@ export function MyEditor({initialValue, onChange}: {initialValue: ContentNode[],
                 const [node] = match;
                 const text = (node as any).text;
                 event.preventDefault();
-                Transforms.insertText(editor, '');
+                Transforms.insertText(editor, "");
                 Editor.removeMark(editor, "role");
                 if (Text.isText(node) && text.includes("：")) {
                   // remove ：and update the node text
                   // TODO 处理中文冒号情况
                 }
-                return
+                return;
               }
             }
             // 如果用户按下回车键，而当前处于编辑代码状态，当前行为空行，则退出代码块
@@ -209,7 +219,7 @@ export function MyEditor({initialValue, onChange}: {initialValue: ContentNode[],
                     Element.isElement(n) && Editor.isBlock(editor, n),
                 });
                 return;
-              }              
+              }
             }
             if (!event.ctrlKey) {
               return;

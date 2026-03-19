@@ -71,6 +71,15 @@ export const CustomHelper = {
           if (match) {
             Editor.removeMark(editor, key);
           } else {
+            const attrs = ['role', 'action', 'background', 'dialog']
+            // 以上四个属性具有排他性，添加其中一个，则需要remove其他三个
+            if (attrs.includes(key)) {
+              attrs.forEach((attr) => {
+                if (attr !== key) {
+                  Editor.removeMark(editor, attr);
+                }
+              });
+            }
             Editor.addMark(editor, key, true);
           }
         }
