@@ -1,4 +1,4 @@
-import { Children, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createEditor, Transforms, Element, Editor, Text } from "slate";
 import { Editable, Slate, withReact } from "slate-react";
 import { useNotification } from "../notification";
@@ -31,6 +31,15 @@ const initialValue = [
 const Leaf = (props: any) => {
   if (props.leaf.role) {
     return <RoleElement {...props} />;
+  }
+  if (props.leaf.action) {
+    return <ActionElement {...props} />;
+  }
+  if (props.leaf.background) {
+    return <BackgroundElement {...props} />;
+  }
+  if (props.leaf.dialog) {
+    return <DialogElement {...props} />;
   }
   let text_decoration = "none";
   if (props.leaf.underline) {

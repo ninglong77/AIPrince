@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNotification } from "../notification";
-import { RoleIcon, ShotIcon } from "../icons";
+import { ActionIcon, BackgroundIcon, DialogIcon, RoleIcon, ShotIcon } from "../icons";
 
 
 export const ShotElement = (props: any) => {
@@ -39,24 +39,27 @@ export const RoleElement = (props: any) => {
 
 export const ActionElement = (props: any) => {
   return (
-    <div className="border border-blue-500 bg-blue-50 p-2" {...props.attributes}>
+    <span className="text-green-500 px-1" {...props.attributes}>
+      <span style={{height: 16, width: 16}} className="inline-block"><ActionIcon /></span>
       {props.children}
-    </div>
+    </span>
   );
 }
 
 export const BackgroundElement = (props: any) => {
   return (
-    <div className="border border-purple-500 bg-purple-50 p-2" {...props.attributes}>
+    <span className="text-blue-500 px-1" {...props.attributes}>
+      <span style={{height: 16, width: 16}} className="inline-block"><BackgroundIcon /></span>
       {props.children}
-    </div>
+    </span>
   );
 }
 
 export const DialogElement = (props: any) => {
   return (
-    <div className="border border-pink-500 bg-pink-50 p-2" {...props.attributes}>
+    <span className="text-pink-500 px-1" {...props.attributes}>
+      <span style={{height: 16, width: 16}} className="inline-block"><DialogIcon /></span>
       {props.children}
-    </div>
+    </span>
   );
 }

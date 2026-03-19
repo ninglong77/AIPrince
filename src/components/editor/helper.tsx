@@ -47,9 +47,9 @@ export const CustomHelper = {
       { type: "style", key: "lineThrough", trigger: "l" },
       { type: "element", key: "shot", trigger: "shot" },
       { type: "style", key: "role", trigger: "role" },
-      { type: "element", key: "action", trigger: "action" },
-      { type: "element", key: "background", trigger: "background" },
-      { type: "element", key: "dialog", trigger: "dialog" },
+      { type: "style", key: "action", trigger: "action" },
+      { type: "style", key: "background", trigger: "background" },
+      { type: "style", key: "dialog", trigger: "dialog" },
     ];
     for (const { type, key, trigger } of mapping) {
       if (target.toLowerCase() === trigger) {
