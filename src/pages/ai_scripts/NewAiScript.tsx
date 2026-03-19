@@ -4,6 +4,8 @@ import { useAiScriptsStore } from "../../states/ai_scripts";
 import { useNotification } from "../../components/notification";
 import { v4 } from "uuid";
 import { add_ai_script, update_ai_script } from "../../services/ai_scripts";
+import { MyEditor } from "../../components/editor";
+import { ContentNode } from "../../components/editor/types";
 
 export default function NewAiScript() {
   // 分析当前是不是编辑模式：如果 URL 中有 editId 参数，则为编辑模式，否则为新增模式
@@ -13,6 +15,14 @@ export default function NewAiScript() {
   const { editId } = useParams() as { editId?: string };
   const [id, setId] = useState<number | null>(null);
   const [formData, setFormData] = useState({ name: "", content: "" });
+  const [initialData, setInitialData] = useState<ContentNode[]>([
+    {
+      type: "paragraph",
+      children: [{ text: "" }],
+    },
+  ]);
+  // 如果是编辑模式，通过此变量决定是否已初始化
+  const [inited, setInited] = useState(false);
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -65,6 +75,19 @@ export default function NewAiScript() {
     const obj = findById(id);
     if (obj) {
       setFormData({ name: obj.name, content: obj.content });
+      setInitialData(
+        !!obj.content
+          ? JSON.parse(obj.content)
+          : [
+              {
+                type: "paragraph",
+                children: [{ text: "" }],
+              },
+            ],
+      );
+      setTimeout(() => {
+        setInited(true);
+      }, 50);
     } else {
       error("AiScript not found");
       navigate("/");
@@ -110,15 +133,19 @@ export default function NewAiScript() {
                 >
                   内容
                 </label>
-                <textarea
-                  id="modal-content"
-                  name="content"
-                  rows={12}
-                  placeholder="编写 AiScript 代码..."
-                  value={formData.content}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y font-mono text-sm"
-                />
+                <div className="p-1">
+                  {(!editId || (!!editId && inited)) && (
+                    <MyEditor
+                      initialValue={initialData}
+                      onChange={(contentNode) => {
+                        setFormData({
+                          ...formData,
+                          content: JSON.stringify(contentNode),
+                        });
+                      }}
+                    />
+                  )}
+                </div>
               </div>
             </div>
 

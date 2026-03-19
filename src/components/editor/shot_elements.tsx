@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNotification } from "../notification";
 import { ActionIcon, BackgroundIcon, DialogIcon, RoleIcon, ShotIcon } from "../icons";
 
 
 export const ShotElement = (props: any) => {
   const node = props.element as any;
   const [content, setContent] = useState("");
-  const notification = useNotification();
   useEffect(() => {
     setContent(JSON.stringify(node))
   }, [props])

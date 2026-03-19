@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { createEditor, Transforms, Element, Editor, Text } from "slate";
 import { Editable, Slate, withReact } from "slate-react";
-import { useNotification } from "../notification";
 import {
   CodeElement,
   DefaultElement,
@@ -20,7 +19,7 @@ import { CustomHelper } from "./helper";
 import Toolbar from "./toolbar";
 import { ContentNode, EditorType } from "./types";
 
-const initialValue = [
+const initialValue1 = [
   {
     type: "paragraph",
     children: [{ text: "A line of text in a paragraph." }],
@@ -88,14 +87,11 @@ const withCodeBlock = (editor: EditorType) => {
   return editor;
 };
 
-export function MyEditor() {
+export function MyEditor({initialValue, onChange}: {initialValue: ContentNode[], onChange?: (content: ContentNode[]) => void}) {
   const [editor] = useState(() => withCodeBlock(withReact(createEditor())));
-  const notifaction = useNotification();
-  const [content, setContent] = useState<ContentNode[]>(
-    initialValue as ContentNode[],
-  );
+  const [content, setContent] = useState<ContentNode[]>([]);
   useEffect(() => {
-    // notifaction.info("Editor content updated: " + content);
+    onChange && onChange(content)
   }, [content]);
   const renderElement = useCallback((props: any) => {
     switch (props.element.type) {
@@ -133,6 +129,7 @@ export function MyEditor() {
         const isAstChange = editor.operations.some(
           (op) => "set_selection" !== op.type,
         );
+        // setContent(value as ContentNode[]);
         if (isAstChange) {
           // Save the value to Local Storage.
           setContent(value as ContentNode[]);

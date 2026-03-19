@@ -19,9 +19,9 @@ export const AiScriptItem = ({
         <h3 className="font-medium text-gray-900 text-lg text-left">
           {script.name}
         </h3>
-        <p className="text-sm text-gray-600 line-clamp-2 mt-1 font-mono whitespace-pre-wrap text-left">
+        {/* <p className="text-sm text-gray-600 line-clamp-2 mt-1 font-mono whitespace-pre-wrap text-left">
           {script.content}
-        </p>
+        </p> */}
       </div>
 
       {/* 右侧操作按钮 */}

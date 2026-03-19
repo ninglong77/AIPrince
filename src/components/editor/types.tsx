@@ -9,9 +9,10 @@ export interface ContentNode {
     | ContentNode[]
     | {
         text: string;
-        bold: boolean;
-        italic: boolean;
-        underline: boolean;
-        lineThrough: boolean;
+        bold?: boolean;
+        italic?: boolean;
+        underline?: boolean;
+        lineThrough?: boolean;
+        role?: boolean
       }[];
 }
