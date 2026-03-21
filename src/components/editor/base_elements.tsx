@@ -42,3 +42,11 @@ export const Title3Element = (props: any) => {
     </h3>
   );
 };
+
+export const IconElement = (props: any) => {
+  return (
+    <span className="text-slate-900" {...props.attributes}>
+      {props.children}
+    </span>
+  );
+};

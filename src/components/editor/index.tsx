@@ -4,6 +4,7 @@ import { Editable, Slate, withReact } from "slate-react";
 import {
   CodeElement,
   DefaultElement,
+  IconElement,
   Title1Element,
   Title2Element,
   Title3Element,
@@ -110,15 +111,9 @@ export function MyEditor({
       case "title3":
         return <Title3Element {...props} />;
       case "shot":
-        return <ShotElement shot_seq={1} {...props} />;
-      case "role":
-        return <RoleElement {...props} />;
-      case "action":
-        return <ActionElement {...props} />;
-      case "background":
-        return <BackgroundElement {...props} />;
-      case "dialog":
-        return <DialogElement {...props} />;
+        return <ShotElement {...props} />;
+      case "icon":
+        return <IconElement {...props} />;
       default:
         return <DefaultElement {...props} />;
     }
@@ -152,6 +147,38 @@ export function MyEditor({
           renderElement={renderElement}
           renderLeaf={renderLeaf}
           onKeyDown={(event) => {
+            // 当按下删除键时，检测是否为 role，若是 role，则补充一个空字符串
+            if (event.key === "Backspace") {
+              const marks = Editor.marks(editor) as any
+              if (marks['role'] && editor.selection) {
+                // 当 mark的 node 为空字符时，以下获取的，其实就不是role节点了
+                // const [node, path] = Editor.node(editor, editor.selection!.focus)
+                // const after = Editor.after(editor, path)
+                // console.info("node--->>>"+JSON.stringify(node))
+                // console.info("after--->>>"+JSON.stringify(after))
+                // const text = (node as any).text;
+                // console.info("text--->>>"+text)
+                // if (text.length === 0) {
+                //   Transforms.insertText(editor, " ");
+                //   Editor.addMark(editor, "role", true);
+                //   // 至此，role已经变成了空字符串，再按下删除建，就应该移除role mark
+                //   return;
+                // }
+              }
+              
+              // const n = Editor.above(editor, {mode: 'lowest'}).
+              // console.info("n--->>>"+JSON.stringify(n))
+              // if () {
+              //   return;
+              // }
+              // const [match] = Editor.nodes(editor, {
+              //   match: (n) => (n as any).role,
+              // });
+              // if (match) {
+              //   const [node] = match;
+                
+              // }
+            }
             // 如果当前是 role，并且用户按下了换行符符空格键或者：或者:，移除 role mark
             if (
               event.key === " " ||
