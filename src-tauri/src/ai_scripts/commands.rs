@@ -1,7 +1,5 @@
 use crate::ai_scripts::models::AiScript;
 
-
-
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 pub fn ai_scripts_cmd() -> Vec<AiScript> {
@@ -20,6 +18,9 @@ pub fn add_ai_script_cmd(new_script: crate::ai_scripts::models::NewAiScript) -> 
 }
 
 #[tauri::command]
-pub fn update_ai_script_cmd(script_id: i32, updated_script: crate::ai_scripts::models::NewAiScript) -> bool {
+pub fn update_ai_script_cmd(
+    script_id: i32,
+    updated_script: crate::ai_scripts::models::NewAiScript,
+) -> bool {
     crate::ai_scripts::service::update_ai_script(script_id, updated_script)
 }

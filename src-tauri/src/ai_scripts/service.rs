@@ -1,4 +1,4 @@
-use diesel::{ExpressionMethods, RunQueryDsl, query_dsl::methods::OrderDsl};
+use diesel::{query_dsl::methods::OrderDsl, ExpressionMethods, RunQueryDsl};
 
 use crate::ai_scripts::models;
 
@@ -43,7 +43,6 @@ pub fn update_ai_script(script_id: i32, updated_script: models::NewAiScript) -> 
         .is_ok()
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -52,7 +51,10 @@ mod tests {
     fn test_list_ai_scripts() {
         let scripts = list_ai_scripts();
         for script in scripts {
-            println!("ID: {}, Name: {}, Created At: {}", script.id, script.name, script.created_at);
+            println!(
+                "ID: {}, Name: {}, Created At: {}",
+                script.id, script.name, script.created_at
+            );
         }
     }
 }

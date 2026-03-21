@@ -6,6 +6,7 @@ import { v4 } from "uuid";
 import { add_ai_script, update_ai_script } from "../../services/ai_scripts";
 import { MyEditor } from "../../components/editor";
 import { ContentNode } from "../../components/editor/types";
+import { RolesCard } from "../../components/ai_scripts/analysis";
 
 export default function NewAiScript() {
   // 分析当前是不是编辑模式：如果 URL 中有 editId 参数，则为编辑模式，否则为新增模式
@@ -75,7 +76,6 @@ export default function NewAiScript() {
     const obj = findById(id);
     if (obj) {
       setFormData({ name: obj.name, content: obj.content });
-      
       setInitialData(
         !!obj.content
           ? JSON.parse(obj.content)
@@ -124,6 +124,11 @@ export default function NewAiScript() {
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+              </div>
+
+              {/** 剧本分析 */}
+              <div>
+                <RolesCard ai_script={formData.content} />
               </div>
 
               {/* 内容文本域 */}
