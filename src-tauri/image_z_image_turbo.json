@@ -1,0 +1,140 @@
+{
+  "9": {
+    "inputs": {
+      "filename_prefix": "z-image",
+      "images": [
+        "43",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "保存图像"
+    }
+  },
+  "39": {
+    "inputs": {
+      "clip_name": "split_files\\text_encoders\\qwen_3_4b.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "加载CLIP"
+    }
+  },
+  "40": {
+    "inputs": {
+      "vae_name": "split_files\\vae\\ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "加载VAE"
+    }
+  },
+  "41": {
+    "inputs": {
+      "width": 480,
+      "height": 832,
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "空Latent图像（SD3）"
+    }
+  },
+  "42": {
+    "inputs": {
+      "conditioning": [
+        "45",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "条件零化"
+    }
+  },
+  "43": {
+    "inputs": {
+      "samples": [
+        "44",
+        0
+      ],
+      "vae": [
+        "40",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE解码"
+    }
+  },
+  "44": {
+    "inputs": {
+      "seed": 435226101465228,
+      "steps": 9,
+      "cfg": 1,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "47",
+        0
+      ],
+      "positive": [
+        "45",
+        0
+      ],
+      "negative": [
+        "42",
+        0
+      ],
+      "latent_image": [
+        "41",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "K采样器"
+    }
+  },
+  "45": {
+    "inputs": {
+      "text": "anime,名字是王美丽;\n金发双丸子头少女身着亮黄色连帽运动套装，胸前绣有“civitai”字样，袖口与裤腿点缀彩虹星形贴纸；脚踏紫白配色厚底鞋，鞋面饰以星星图案，整体造型活泼童趣又具未来科技感。她盘膝坐在服务器机柜前地面，嘴角微扬，琥珀瞳孔闪烁光点，颈间黑色细绳项圈衬托俏皮气质，耳后缀满彩色小星星装饰，散发青春活力气息。\n\n左侧大腿旁蹲踞一只纯白色毛绒兔子玩偶，圆脸萌眼，静默相伴，为画面增添治愈暖意。女孩右手轻搭膝盖，左手自然垂落于身旁，姿态放松而略带探索神情，仿佛正沉浸于数据世界的奇妙旅程。\n\n场景置于现代化数据中心内——两侧高耸排列数排银灰色金属机柜，表面布满散热格栅及接口端口，在橙黄灯光映照下泛起冷冽光泽。部分机柜侧面嵌入发光指示灯阵列，如萤火般跳跃律动，营造数字脉搏般的节奏感。右侧机柜上可见可爱熊头图标，暗示系统友好交互界面设计。\n\n上方悬浮巨大霓虹标识牌，“Z-IMAGE ANIME-V1”字母边缘勾勒金色电弧特效，并伴随星光粒子飘浮其侧，强化品牌识别度的同时赋予奇幻科幻质感。整个空间采用低角度仰视视角布局，人物居画面中央偏右，形成稳定重心，同时利用纵深延伸突出环境规模宏大。\n\n光线主要由顶部轨道照明投射而来，辅以机柜内部LED光源反射至地面产生镜像涟漪效果，增强立体层次。主光源从左前方斜切照射，使角色面部轮廓分明、衣褶纹理清晰可辨，阴影过渡柔和却不失锐利对比，塑造温暖但不失冷静的技术美学基调。\n\n色彩体系以黄金调为主轴贯穿全局，搭配深灰蓝机械色调作为基底，局部穿插紫色、蓝色荧光元素制造视觉焦点。材质表现细腻真实——服装呈现丝缎般反光质地，鞋子塑料涂层光滑明亮，机柜则模拟工业金属拉丝肌理，虚实结合提升现实代入感。\n\n整幅作品融合动漫风格笔触与写实摄影结构，既有日系二次元拟人化表达，亦保留硬核科技硬件的真实观感\n",
+      "clip": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP文本编码"
+    }
+  },
+  "46": {
+    "inputs": {
+      "unet_name": "split_files\\diffusion_models\\z_image_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "UNet加载器"
+    }
+  },
+  "47": {
+    "inputs": {
+      "shift": 3,
+      "model": [
+        "46",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "采样算法（AuraFlow）"
+    }
+  }
+}

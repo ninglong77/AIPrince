@@ -1,11 +1,14 @@
 mod ai_scripts;
 mod schema;
+pub mod comfyui;
 
 use diesel::prelude::*;
 use dotenvy::dotenv;
 use std::env;
 
 use crate::ai_scripts::commands::{ai_scripts_cmd, remove_ai_script_cmd};
+
+pub type StdResult<T> = Result<T, Box<dyn std::error::Error>>;
 
 pub fn establish_connection() -> SqliteConnection {
     dotenv().ok();
@@ -36,6 +39,8 @@ pub fn run() {
             remove_ai_script_cmd,
             crate::ai_scripts::commands::add_ai_script_cmd,
             crate::ai_scripts::commands::update_ai_script_cmd,
+            crate::comfyui::queue_prompt_cmd,
+            // crate::comfyui::get_history_cmd,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
