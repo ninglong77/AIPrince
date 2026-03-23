@@ -40,7 +40,11 @@ pub fn run() {
             crate::ai_scripts::commands::add_ai_script_cmd,
             crate::ai_scripts::commands::update_ai_script_cmd,
             crate::comfyui::queue_prompt_cmd,
-            // crate::comfyui::get_history_cmd,
+            crate::comfyui::get_history_cmd,
+            crate::comfyui::commands::comfyui_apis_cmd,
+            crate::comfyui::commands::remove_comfyui_api_cmd,
+            crate::comfyui::commands::add_comfyui_api_cmd,
+            crate::comfyui::commands::update_comfyui_api_cmd,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

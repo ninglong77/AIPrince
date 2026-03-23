@@ -1,4 +1,7 @@
 use std::collections::HashMap;
+mod models;
+mod service;
+pub mod commands;
 
 use serde::{Deserialize, Serialize};
 
