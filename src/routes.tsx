@@ -14,6 +14,8 @@ export default function AppRoutes() {
       <Route path="/ui" element={<UI />} />
       <Route path="/comfyui" element={<ComfyUiApisPage />} />
       <Route path="/comfyui/new" element={<NewComfyUiApiPage />} />
+      <Route path="/comfyui/edit/:editId" element={<NewComfyUiApiPage />} />
+
     </Routes>
   );
 }

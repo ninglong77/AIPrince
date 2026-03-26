@@ -9,6 +9,10 @@ export function Button({ children, onClick, className }: { children: React.React
     </button>
 }
 
+export function PrimaryTextButton({ children, className, onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) {
+    return <button className={`cursor-pointer text-blue-600 hover:text-blue-700 font-medium rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${className || ''}`} onClick={onClick}>{children}</button>
+}
+
 export function DangerButton({ children, className, onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) {
     return <button className={`cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${className || ''}`} onClick={onClick}>{children}</button>
 }
