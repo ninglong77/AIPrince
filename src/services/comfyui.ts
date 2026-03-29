@@ -20,3 +20,19 @@ export async function update_comfyui_api(id: number, script: NewComfyUiApi) {
     const r = await invoke('update_comfyui_api_cmd', {scriptId: id, updatedScript: script})
     return r
 }
+
+
+export interface ComfyUiResult {
+  prompt_id: string;
+  number: number;
+}
+
+export async function queue_prompt_cmd(prompt: string): Promise<ComfyUiResult> {
+  const r: ComfyUiResult = await invoke('queue_prompt_cmd', {prompt: prompt})
+  return r
+}
+
+export async function get_history_cmd(prompt_id: string) {
+  const r = await invoke('get_history_cmd', {promptId: prompt_id})
+  return r
+}

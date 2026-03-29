@@ -7,6 +7,7 @@ import {
   get_comfyui_apis,
   update_comfyui_api,
 } from "../../services/comfyui";
+import { ComfyUiApiParams } from "../../components/comfyui/Parameters";
 
 export default function () {
   let navigate = useNavigate();
@@ -119,6 +120,10 @@ export default function () {
             >
               保存
             </button>
+          </div>
+          {/** 测试 */}
+          <div>
+            {prompt_api && <ComfyUiApiParams api={prompt_api} />}
           </div>
 
           {/* 关闭按钮 (小叉) */}

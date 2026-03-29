@@ -14,7 +14,7 @@ pub struct ComfyUiPromptResult {
 }
 
 fn get_server_url() -> String {
-    let server = std::env::var("COMFYUI_SERVER").unwrap_or("http://192.168.31.99:8188".to_string());
+    let server = std::env::var("COMFYUI_SERVER").unwrap_or("http://192.168.31.99:18188".to_string());
     server
 }
 
