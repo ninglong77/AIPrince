@@ -4,53 +4,27 @@ import { useEffect, useState } from "react";
 import { useNotification } from "../notification";
 import {
   ComfyUiResult,
-  get_history_cmd,
-  queue_prompt_cmd,
+  get_and_save_image_cmd,
 } from "../../services/comfyui";
-import { PrimaryButton } from "../buttons";
-
-export interface ComfyUiNode {
-  inputs: {
-    [key: string]: any;
-  };
-  class_type: string;
-  _meta?: {
-    title: string;
-  };
-}
-
-export interface ComfyUiHistory {
-  status: {
-    completed: boolean,
-    messages: [][],
-    status_str: string;
-  }
-}
-
-interface Node {
-  id: string;
-  node: ComfyUiNode;
-}
+import { PrimaryButton, PrimaryTextButton } from "../buttons";
+import { ComfyUiHistory, useComfyUiStore, Node } from "../../states/comfyui";
+import { Input } from "../inputs";
+import { LocalImage } from "../images";
 
 export function ComfyUiApiParams({ api }: { api: string }) {
+  const comfyui = useComfyUiStore();
   const [nodes, setNodes] = useState<Node[]>([]);
   const [defaultNodes, setDefaultNodes] = useState<Node[]>([]);
   const [prompt, setPrompt] = useState<string>();
   const [result, setResult] = useState<ComfyUiResult>();
   const [submitting, setSubmitting] = useState(false);
   const [history, setHistory] = useState<ComfyUiHistory>();
+  const [pending, setPending] = useState<boolean>(false);
   const notification = useNotification();
   useEffect(() => {
     if (api) {
       try {
-        const json = JSON.parse(api);
-        const arr: Node[] = [];
-        for (const [key, value] of Object.entries(json)) {
-          arr.push({
-            id: key,
-            node: value as ComfyUiNode,
-          });
-        }
+        const arr = comfyui.parse_prompt(api);
         setNodes(arr);
         setDefaultNodes(arr);
       } catch (e) {
@@ -68,7 +42,7 @@ export function ComfyUiApiParams({ api }: { api: string }) {
           <h1 className="text-slate-500">ComfyUI API </h1>
           {/** 展示参数 */}
           <div className="flex flex-col gap-4">
-            {nodes.map((node) => (
+            {nodes.map((node, i) => (
               <div className="flex flex-col">
                 <div>
                   {node.node._meta?.title || "-"}({node.node.class_type})
@@ -78,7 +52,12 @@ export function ComfyUiApiParams({ api }: { api: string }) {
                     ([key, value]) =>
                       !Array.isArray(value) && (
                         <div>
-                          {key}: {value}
+                          {key}: <Input value={value} setValue={v1 => {
+                            const obj = [...nodes].map((v, j) => {
+                              return j === i ? { ...v, node: { ...v.node, inputs: { ...v.node.inputs, [key]: v1 } } } : v
+                            })
+                            setNodes(obj)
+                          }} />
                         </div>
                       ),
                   )}
@@ -89,19 +68,32 @@ export function ComfyUiApiParams({ api }: { api: string }) {
           {/** 调用API */}
           <div className="mt-4 flex border-t mb-8 py-4 border-slate-200 flex-col gap-2">
             <div>
+              <PrimaryTextButton onClick={() => {
+                setNodes([...defaultNodes])
+              }}>Reset</PrimaryTextButton>
+            </div>
+            <div>
               <PrimaryButton
-                disabled={!prompt || submitting}
+                disabled={!prompt || submitting || pending}
                 onClick={() => {
                   if (!prompt) return;
-                  const obj: any = {};
-                  for (const n of nodes) {
-                    obj[n.id] = n.node;
-                  }
                   setSubmitting(true);
-                  queue_prompt_cmd(JSON.stringify(obj))
+                  comfyui.queue_prompt(nodes)
                     .then((r) => {
                       notification.success("调用成功");
                       setResult(r);
+                      // wait for result
+                      setPending(true);
+                      comfyui.wait_for_result(r.prompt_id)
+                        .then((r) => {
+                          setHistory(r);
+                        })
+                        .catch((e) => {
+                          notification.error("调用 wait_for_result 失败:"+e);
+                        })
+                        .finally(() => {
+                          setPending(false);
+                        })
                     })
                     .catch((err) => {
                       notification.error("调用失败:" + err);
@@ -111,7 +103,7 @@ export function ComfyUiApiParams({ api }: { api: string }) {
                     });
                 }}
               >
-                调用API
+                {pending ? 'Pending': '调用API'}
               </PrimaryButton>
             </div>
             <div>
@@ -119,9 +111,9 @@ export function ComfyUiApiParams({ api }: { api: string }) {
                 disabled={!result}
                 onClick={() => {
                   if (result) {
-                    get_history_cmd(result.prompt_id)
-                      .then((r: any) => {
-                        setHistory(r[result.prompt_id])
+                    comfyui.get_history(result.prompt_id)
+                      .then((r) => {
+                        setHistory(r)
                       })
                       .catch((err) => {
                         notification.error("调用history失败:" + err);
@@ -133,7 +125,30 @@ export function ComfyUiApiParams({ api }: { api: string }) {
               </PrimaryButton>
             </div>
             <div>
+              <PrimaryButton
+                onClick={() => {
+                  if (history) {
+                    comfyui.get_image("http://192.168.31.99:18188", history)
+                      .then((r) => {
+                        notification.success("Download 成功"+r);
+                      }).catch(e => {
+                        notification.error("Download 失败"+e);
+                      })
+                  }
+                }}
+              >
+                Download Image
+              </PrimaryButton>
+            </div>
+            <div>
               {history?.status.status_str}
+            </div>
+            <div>
+              {history?.outputs && JSON.stringify(history?.outputs)}
+            </div>
+            <div>
+              <LocalImage src={'/Users/liaojinlong/.prince_files/ed69a039-37ed-4685-86a7-bb72a77897be.png'} />
+              {/* <img src={'asset://Users/liaojinlong/.prince_files/ed69a039-37ed-4685-86a7-bb72a77897be.png'} alt="Generated Image" /> */}
             </div>
           </div>
         </div>

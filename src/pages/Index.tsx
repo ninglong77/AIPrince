@@ -79,6 +79,7 @@ const AiScriptManager: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log('---->>>')
     refresh();
   }, [])
 

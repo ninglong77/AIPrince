@@ -36,3 +36,13 @@ export async function get_history_cmd(prompt_id: string) {
   const r = await invoke('get_history_cmd', {promptId: prompt_id})
   return r
 }
+
+export async function get_and_save_image_cmd(server: string, filename: string, subfolder: string, folder_type: string) {
+  const r = await invoke('get_and_save_image_cmd', {
+    server: server,
+    filename: filename,
+    subfolder: !subfolder ? "--" : subfolder,
+    folderType: folder_type
+  })
+  return r as any as string
+}

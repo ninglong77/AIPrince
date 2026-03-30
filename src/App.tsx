@@ -26,6 +26,8 @@ forwardConsole('warn', warn);
 forwardConsole('error', error);
 
 info("App started")
+console.log('--->>>2')
+info("App started2")
 
 
 function App() {

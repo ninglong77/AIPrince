@@ -8,6 +8,14 @@
   "permissions": [
     "core:default",
     "opener:default",
-    "log:default"
+    "log:default",
+    "fs:default",
+    "fs:allow-write",
+    "fs:allow-read",
+    "fs:allow-exists",
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "$HOME/.*/**" }]
+    }
   ]
 }

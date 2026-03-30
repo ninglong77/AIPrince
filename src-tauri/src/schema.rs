@@ -22,7 +22,4 @@ diesel::table! {
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(
-    ai_scripts,
-    comfyui_apis,
-);
+diesel::allow_tables_to_appear_in_same_query!(ai_scripts, comfyui_apis,);

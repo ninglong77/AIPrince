@@ -10,7 +10,6 @@ pub fn list_comfyui_apis() -> Vec<models::ComfyUiApi> {
         .expect("Error loading AI scripts")
 }
 
-
 pub fn remove_comfyui_apis(script_id: i32) -> bool {
     use crate::schema::comfyui_apis::dsl::*;
     use diesel::QueryDsl;

@@ -1,6 +1,6 @@
 mod ai_scripts;
-mod schema;
 pub mod comfyui;
+mod schema;
 
 use diesel::prelude::*;
 use dotenvy::dotenv;
@@ -27,9 +27,10 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_fs::init())
         .plugin(
             tauri_plugin_log::Builder::new()
-                .level(tauri_plugin_log::log::LevelFilter::Info)
+                .level(tauri_plugin_log::log::LevelFilter::Debug)
                 .build(),
         )
         .plugin(tauri_plugin_opener::init())
@@ -45,6 +46,7 @@ pub fn run() {
             crate::comfyui::commands::remove_comfyui_api_cmd,
             crate::comfyui::commands::add_comfyui_api_cmd,
             crate::comfyui::commands::update_comfyui_api_cmd,
+            crate::comfyui::get_and_save_image_cmd,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
