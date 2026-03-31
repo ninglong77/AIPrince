@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useNotification } from "../notification";
 import {
   ComfyUiResult,
-  get_and_save_image_cmd,
 } from "../../services/comfyui";
 import { PrimaryButton, PrimaryTextButton } from "../buttons";
 import { ComfyUiHistory, useComfyUiStore, Node } from "../../states/comfyui";
@@ -20,6 +19,7 @@ export function ComfyUiApiParams({ api }: { api: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [history, setHistory] = useState<ComfyUiHistory>();
   const [pending, setPending] = useState<boolean>(false);
+  const [image, setImage] = useState<string>();
   const notification = useNotification();
   useEffect(() => {
     if (api) {
@@ -130,6 +130,9 @@ export function ComfyUiApiParams({ api }: { api: string }) {
                   if (history) {
                     comfyui.get_image("http://192.168.31.99:18188", history)
                       .then((r) => {
+                        if (r && r.length > 0) {
+                          setImage(r[0])
+                        }
                         notification.success("Download 成功"+r);
                       }).catch(e => {
                         notification.error("Download 失败"+e);
@@ -147,7 +150,7 @@ export function ComfyUiApiParams({ api }: { api: string }) {
               {history?.outputs && JSON.stringify(history?.outputs)}
             </div>
             <div>
-              <LocalImage src={'/Users/liaojinlong/.prince_files/ed69a039-37ed-4685-86a7-bb72a77897be.png'} />
+              {image && <LocalImage src={image} />}
               {/* <img src={'asset://Users/liaojinlong/.prince_files/ed69a039-37ed-4685-86a7-bb72a77897be.png'} alt="Generated Image" /> */}
             </div>
           </div>
