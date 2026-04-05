@@ -3,6 +3,7 @@ import { create } from "zustand";
 interface Notification {
   message: string;
   level: "info" | "error" | "success";
+  duration?: number;
 }
 
 export interface NotificationManager {
@@ -10,31 +11,39 @@ export interface NotificationManager {
   info: (message: string) => void;
   success: (message: string) => void;
   error: (message: string) => void;
-  pop: () => void;
-  auto_pop: (duration: number) => void;
+  pop: (message?: string) => void;
 }
 
-export const useNotification = create<NotificationManager>((set) => ({
-  info: (message) =>
+export const useNotification = create<NotificationManager>((set) => {
+  const add = (n: Notification) => {
     set((state) => ({
-      notifications: [...state.notifications, { message, level: "info" }],
-    })),
-  success: (message) =>
-    set((state) => ({
-      notifications: [...state.notifications, { message, level: "success" }],
-    })),
-  error: (message) =>
-    set((state) => ({
-      notifications: [...state.notifications, { message, level: "error" }],
-    })),
-  pop: () => set((state) => ({ notifications: state.notifications.slice(1) })),
-  notifications: [],
-  auto_pop: (duration) => {
+      notifications: [...state.notifications, { message: n.message, level: "info" }],
+    }))
     setTimeout(() => {
-      set((state) => ({ notifications: state.notifications.slice(1) }));
-    }, duration);
+      set((state) => ({
+        notifications: state.notifications.filter((n) => n.message !== n.message),
+      }))
+    }, n.duration ?? 5000)
+  }
+  return {
+  info: (message) =>
+    add({ message, level: "info" }),
+  success: (message) =>
+    add({ message, level: "success" }),
+  error: (message) =>
+    add({ message, level: "info" }),
+  pop: (message?: string) => {
+    if (message) {
+      set((state) => ({
+        notifications: state.notifications.filter((n) => n.message !== message),
+      }))
+    } else {
+      set((state) => ({ notifications: state.notifications.slice(1) }))
+    }
   },
-}));
+  notifications: [],
+}
+});
 
 export function NotificationContainer() {
   const { notifications, pop } = useNotification();
@@ -50,7 +59,9 @@ export function NotificationContainer() {
                 ? "bg-green-500"
                 : "bg-red-500"
           }`}
-          onClick={pop}
+          onClick={() => {
+            pop(n.message)
+          }}
         >
           {n.message}
         </div>
