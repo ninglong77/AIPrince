@@ -37,6 +37,7 @@ pub fn update_comfyui_apis(script_id: i32, updated_script: models::NewComfyUiApi
             server_url.eq(updated_script.server_url),
             name.eq(updated_script.name),
             prompt_api.eq(updated_script.prompt_api),
+            alias.eq(updated_script.alias)
         ))
         .execute(connection)
         .is_ok()

@@ -1,16 +1,152 @@
 /** 解析 ComfyUI API JSON 参数 */
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useNotification } from "../notification";
-import {
-  ComfyUiResult,
-} from "../../services/comfyui";
+import { ComfyUiResult } from "../../services/comfyui";
 import { PrimaryButton, PrimaryTextButton } from "../buttons";
 import { ComfyUiHistory, useComfyUiStore, Node } from "../../states/comfyui";
-import { Input } from "../inputs";
+import { Input, TextArea } from "../inputs";
 import { LocalImage } from "../images";
+import { ParameterAlias } from "../../common";
 
-export function ComfyUiApiParams({ api }: { api: string }) {
+
+function InputValueSwitch({
+  type,
+  value,
+  setValue,
+  defaultValueType,
+}: {
+  type: "input" | "textarea";
+  value: string | number | boolean;
+  setValue: (value: string | number | boolean) => void;
+  defaultValueType: "string" | "number" | "boolean";
+}) {
+  return (
+    <>
+      {defaultValueType === "number" && (
+        <Input type="number" value={value as string} setValue={setValue} />
+      )}
+      {defaultValueType === "boolean" && (
+        <input
+          type="checkbox"
+          className=""
+          checked={value as boolean}
+          onChange={(e) => setValue(e.target.checked)}
+        />
+      )}
+      {defaultValueType === "string" && (
+        <>
+          {type === "input" ? (
+            <Input value={value as string} setValue={setValue} />
+          ) : (
+            <TextArea
+              className=" min-h-48"
+              value={value as string}
+              setValue={setValue}
+            />
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
+function KeyValue({
+  key1,
+  value,
+  setValue,
+  alias: alias1,
+  onParameterChange,
+}: {
+  key1: string;
+  value: string | number | boolean;
+  setValue: (value: string | number | boolean) => void;
+  alias?: ParameterAlias;
+  onParameterChange?: (parameterAlias: ParameterAlias) => void;
+}) {
+  const [type, setType] = useState<string>(alias1?.type || "input");
+  const [required, setRequired] = useState<boolean>(alias1?.required || false);
+  const [alias, setAlias] = useState<string>(alias1?.alias || key1);
+  const [defaultValue, setDefaultValue] = useState<string | number | boolean>(
+    alias1?.default || value,
+  );
+  const [defaultValueType, setDefaultValueType] = useState<string|undefined>(alias1?.default_value_type);
+  useEffect(() => {
+    if (onParameterChange) {
+      onParameterChange({
+        required,
+        type: type as any,
+        alias: alias ?? key1,
+        default: defaultValue,
+        default_value_type: defaultValueType as any,
+      });
+    }
+  }, [type, required, alias, value, defaultValue]);
+  useEffect(() => {
+    setDefaultValueType(typeof value);
+  }, [value]);
+  return (
+    <div className="flex flex-col">
+      <div className="flex flex-row items-center">
+        <div>
+          {key1}({defaultValueType}):
+        </div>
+        {/** 生成一个下拉框，可以选择值的类型是 input 还是 textarea */}
+        <select
+          className="ml-2"
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+        >
+          <option value="input">input</option>
+          <option value="textarea">textarea</option>
+        </select>
+        {/** 增加一个复选框，勾选是否作为可供用户看到的输入参数  */}
+        <input
+          type="checkbox"
+          className="ml-2"
+          checked={required}
+          onChange={(e) => setRequired(e.target.checked)}
+        />
+        <label className="ml-2">是否作为用户输入参数</label>
+      </div>
+      {required && <div className="flex flex-col gap-2 py-4 pl-2">
+        {/** 如果勾选了 required，则显示一个输入框，用户可以输入参数别名 */}
+        <div className="flex flex-row items-center">
+          <div className="w-1/5">
+            <label className="w-20">别名</label>
+          </div>
+          <div>
+            <Input
+              value={alias as any}
+              setValue={setAlias as any}
+              placeholder="请输入参数别名"
+            />
+          </div>
+        </div>
+        <div className="flex flex-row items-center">
+          <div className="w-1/5">参数默认值</div>
+          <div className="">
+            <InputValueSwitch
+              value={defaultValue as any}
+              setValue={setDefaultValue}
+              type={type as any}
+              defaultValueType={defaultValueType as any}
+            />
+          </div>
+        </div>
+      </div>}
+      
+      <InputValueSwitch
+        value={value}
+        setValue={setValue}
+        type={type as any}
+        defaultValueType={defaultValueType as any}
+      />
+    </div>
+  );
+}
+
+export function ComfyUiApiParams({ api, onChangeAlias, alias: alias1 }: { api: string, alias: {[key: string]: ParameterAlias}, onChangeAlias?: (alias: {[key: string]: ParameterAlias}) => void}) {
   const comfyui = useComfyUiStore();
   const [nodes, setNodes] = useState<Node[]>([]);
   const [defaultNodes, setDefaultNodes] = useState<Node[]>([]);
@@ -20,6 +156,7 @@ export function ComfyUiApiParams({ api }: { api: string }) {
   const [history, setHistory] = useState<ComfyUiHistory>();
   const [pending, setPending] = useState<boolean>(false);
   const [image, setImage] = useState<string>();
+  const [alias, setAlias] = useState<{[key: string]: ParameterAlias}>(alias1);
   const notification = useNotification();
   useEffect(() => {
     if (api) {
@@ -35,6 +172,11 @@ export function ComfyUiApiParams({ api }: { api: string }) {
   useEffect(() => {
     setPrompt(JSON.stringify(nodes));
   }, [nodes]);
+  useEffect(() => {
+    if (onChangeAlias) {
+      onChangeAlias(alias);
+    }
+  }, [alias])
   return (
     <>
       {nodes && (
@@ -51,14 +193,29 @@ export function ComfyUiApiParams({ api }: { api: string }) {
                   {Object.entries(node.node.inputs).map(
                     ([key, value]) =>
                       !Array.isArray(value) && (
-                        <div>
-                          {key}: <Input value={value} setValue={v1 => {
+                        <KeyValue
+                          key1={key}
+                          value={value}
+                          alias={alias[key]}
+                          onParameterChange={aliasItem => {
+                            setAlias({...alias, [key]: aliasItem})
+                          }}
+                          setValue={(v1) => {
+                            console.info("---->>>" + v1 + typeof v1);
                             const obj = [...nodes].map((v, j) => {
-                              return j === i ? { ...v, node: { ...v.node, inputs: { ...v.node.inputs, [key]: v1 } } } : v
-                            })
-                            setNodes(obj)
-                          }} />
-                        </div>
+                              return j === i
+                                ? {
+                                    ...v,
+                                    node: {
+                                      ...v.node,
+                                      inputs: { ...v.node.inputs, [key]: v1 },
+                                    },
+                                  }
+                                : v;
+                            });
+                            setNodes(obj);
+                          }}
+                        />
                       ),
                   )}
                 </div>
@@ -68,9 +225,13 @@ export function ComfyUiApiParams({ api }: { api: string }) {
           {/** 调用API */}
           <div className="mt-4 flex border-t mb-8 py-4 border-slate-200 flex-col gap-2">
             <div>
-              <PrimaryTextButton onClick={() => {
-                setNodes([...defaultNodes])
-              }}>Reset</PrimaryTextButton>
+              <PrimaryTextButton
+                onClick={() => {
+                  setNodes([...defaultNodes]);
+                }}
+              >
+                Reset
+              </PrimaryTextButton>
             </div>
             <div>
               <PrimaryButton
@@ -78,22 +239,24 @@ export function ComfyUiApiParams({ api }: { api: string }) {
                 onClick={() => {
                   if (!prompt) return;
                   setSubmitting(true);
-                  comfyui.queue_prompt(nodes)
+                  comfyui
+                    .queue_prompt(nodes)
                     .then((r) => {
                       notification.success("调用成功");
                       setResult(r);
                       // wait for result
                       setPending(true);
-                      comfyui.wait_for_result(r.prompt_id)
+                      comfyui
+                        .wait_for_result(r.prompt_id)
                         .then((r) => {
                           setHistory(r);
                         })
                         .catch((e) => {
-                          notification.error("调用 wait_for_result 失败:"+e);
+                          notification.error("调用 wait_for_result 失败:" + e);
                         })
                         .finally(() => {
                           setPending(false);
-                        })
+                        });
                     })
                     .catch((err) => {
                       notification.error("调用失败:" + err);
@@ -103,7 +266,7 @@ export function ComfyUiApiParams({ api }: { api: string }) {
                     });
                 }}
               >
-                {pending ? 'Pending': '调用API'}
+                {pending ? "Pending" : "调用API"}
               </PrimaryButton>
             </div>
             <div>
@@ -111,9 +274,10 @@ export function ComfyUiApiParams({ api }: { api: string }) {
                 disabled={!result}
                 onClick={() => {
                   if (result) {
-                    comfyui.get_history(result.prompt_id)
+                    comfyui
+                      .get_history(result.prompt_id)
                       .then((r) => {
-                        setHistory(r)
+                        setHistory(r);
                       })
                       .catch((err) => {
                         notification.error("调用history失败:" + err);
@@ -128,27 +292,25 @@ export function ComfyUiApiParams({ api }: { api: string }) {
               <PrimaryButton
                 onClick={() => {
                   if (history) {
-                    comfyui.get_image("http://192.168.31.99:18188", history)
+                    comfyui
+                      .get_image("http://192.168.31.99:18188", history)
                       .then((r) => {
                         if (r && r.length > 0) {
-                          setImage(r[0])
+                          setImage(r[0]);
                         }
-                        notification.success("Download 成功"+r);
-                      }).catch(e => {
-                        notification.error("Download 失败"+e);
+                        notification.success("Download 成功" + r);
                       })
+                      .catch((e) => {
+                        notification.error("Download 失败" + e);
+                      });
                   }
                 }}
               >
                 Download Image
               </PrimaryButton>
             </div>
-            <div>
-              {history?.status.status_str}
-            </div>
-            <div>
-              {history?.outputs && JSON.stringify(history?.outputs)}
-            </div>
+            <div>{history?.status.status_str}</div>
+            <div>{history?.outputs && JSON.stringify(history?.outputs)}</div>
             <div>
               {image && <LocalImage src={image} />}
               {/* <img src={'asset://Users/liaojinlong/.prince_files/ed69a039-37ed-4685-86a7-bb72a77897be.png'} alt="Generated Image" /> */}

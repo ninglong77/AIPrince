@@ -3,7 +3,12 @@ import { ComfyUiApi, NewComfyUiApi } from "../common";
 
 export async function get_comfyui_apis() {
     const scripts = await invoke("comfyui_apis_cmd") as ComfyUiApi[];
-    return scripts
+    return scripts.map(i => {
+      console.info('777'+i.alias)
+      return {
+        ...i, alias: JSON.parse(i.alias as unknown as string)
+      }
+    })
 }
 
 export async function remove_comfyui_api(id: number) {
@@ -12,12 +17,13 @@ export async function remove_comfyui_api(id: number) {
 }
 
 export async function add_comfyui_api(new_script: NewComfyUiApi) {
-    const r = await invoke('add_comfyui_api_cmd', {newScript: new_script})
+    const r = await invoke('add_comfyui_api_cmd', {newScript: {...new_script, alias: JSON.stringify(new_script.alias)}})
     return r
 }
 
 export async function update_comfyui_api(id: number, script: NewComfyUiApi) {
-    const r = await invoke('update_comfyui_api_cmd', {scriptId: id, updatedScript: script})
+    console.info("---->>>8888"+JSON.stringify(script.alias))
+    const r = await invoke('update_comfyui_api_cmd', {scriptId: id, updatedScript: {...script, alias: JSON.stringify(script.alias)}})
     return r
 }
 

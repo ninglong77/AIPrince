@@ -11,6 +11,7 @@ pub struct ComfyUiApi {
     pub prompt_api: String,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
+    pub alias: String,
 }
 
 #[derive(Insertable, Serialize, Deserialize)]
@@ -20,4 +21,5 @@ pub struct NewComfyUiApi {
     pub name: String,
     pub server_url: String,
     pub prompt_api: String,
+    pub alias: String,
 }

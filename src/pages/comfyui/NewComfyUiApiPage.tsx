@@ -8,6 +8,7 @@ import {
   update_comfyui_api,
 } from "../../services/comfyui";
 import { ComfyUiApiParams } from "../../components/comfyui/Parameters";
+import { ParameterAlias } from "../../common";
 
 export default function () {
   let navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function () {
   const { editId } = useParams() as { editId?: string };
   // 如果是编辑模式，通过此变量决定是否已初始化
   const [inited, setInited] = useState(false);
+  const [alias, setAlias] = useState<{[key: string]: ParameterAlias}>()
 
   useEffect(() => {
     if (editId) {
@@ -29,6 +31,7 @@ export default function () {
           setUrl(api.server_url);
           setPromptApi(api.prompt_api);
           setInited(true);
+          setAlias(api.alias);
         }
       });
     } else {
@@ -50,10 +53,12 @@ export default function () {
       return;
     }
     if (editId) {
+      console.info('---->>>'+JSON.stringify(alias))
       update_comfyui_api(parseInt(editId), {
         name,
         server_url: url,
         prompt_api,
+        alias: alias,
       })
         .then(() => {
           notification.success("保存成功");
@@ -67,6 +72,7 @@ export default function () {
         name,
         server_url: url,
         prompt_api,
+        alias: alias,
       })
         .then(() => {
           notification.success("添加成功");
@@ -85,14 +91,14 @@ export default function () {
           <section className="w-48">
             <Input
               value={name}
-              setValue={setName}
+              setValue={setName as any}
               placeholder="请输入 API 名称"
             />
           </section>
           <section className="w-48">
             <Input
               value={url}
-              setValue={setUrl}
+              setValue={setUrl as any}
               placeholder="请输入 ComfyUI 地址"
             />
           </section>
@@ -123,7 +129,13 @@ export default function () {
           </div>
           {/** 测试 */}
           <div>
-            {prompt_api && <ComfyUiApiParams api={prompt_api} />}
+            {JSON.stringify(alias)}
+          </div>
+          <div>
+            {prompt_api && <ComfyUiApiParams alias={alias || {}} onChangeAlias={alias1 => {
+              console.info(JSON.stringify(alias1))
+              setAlias(alias1)
+            }} api={prompt_api} />}
           </div>
 
           {/* 关闭按钮 (小叉) */}

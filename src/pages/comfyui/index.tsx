@@ -40,7 +40,7 @@ export function ComfyUiApisPage() {
             >
               <div className="flex flex-col gap-1">
                 <div className="text-lg font-bold">{api.name}</div>
-                <div className="text-sm text-slate-500">{api.server_url}</div>
+                <div className="text-sm text-slate-500">{api.server_url}</div>                
               </div>
               <div className="flex-row h-full self-end p1-2 gap-2">
                 <NavLink to={"/comfyui/edit/" + api.id}>
