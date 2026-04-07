@@ -19,7 +19,7 @@ export default function () {
   const { editId } = useParams() as { editId?: string };
   // 如果是编辑模式，通过此变量决定是否已初始化
   const [inited, setInited] = useState(false);
-  const [alias, setAlias] = useState<{[key: string]: ParameterAlias}>()
+  const [alias, setAlias] = useState<{[key: string]: {[key: string]: ParameterAlias}}>()
 
   useEffect(() => {
     if (editId) {
@@ -129,7 +129,6 @@ export default function () {
           </div>
           <div>
             {prompt_api && <ComfyUiApiParams alias={alias || {}} onChangeAlias={alias1 => {
-              console.info(JSON.stringify(alias1))
               setAlias(alias1)
             }} api={prompt_api} />}
           </div>

@@ -1,6 +1,4 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { BaseDirectory, homeDir, join } from "@tauri-apps/api/path";
-import { exists } from "@tauri-apps/plugin-fs";
 import { useEffect, useState } from "react";
 
 export function LocalImage({src}: {src: string}) {
@@ -14,12 +12,5 @@ export function LocalImage({src}: {src: string}) {
       updatePaths();
     }, [src]);
 
-    return <>
-    <button onClick={() => {
-      updatePaths().then(() => {});
-    }}>Test</button>
-    <img src={imagePath || ''} alt="Some Image" />;
-    <div>{imagePath}</div>
-    </> 
-    
+    return  <img src={imagePath || ''} alt="Some Image" />
 }

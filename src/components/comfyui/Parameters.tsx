@@ -7,7 +7,7 @@ import { Input, TextArea } from "../inputs";
 import { ParameterAlias } from "../../common";
 import CallApi from "./CallApi";
 
-function InputValueSwitch({
+export function InputValueSwitch({
   type,
   value,
   setValue,
@@ -158,14 +158,14 @@ export function ComfyUiApiParams({
   alias: alias1,
 }: {
   api: string;
-  alias: { [key: string]: ParameterAlias };
-  onChangeAlias?: (alias: { [key: string]: ParameterAlias }) => void;
+  alias: {[key: string]: {[key: string]: ParameterAlias}};
+  onChangeAlias?: (alias: {[key: string]: {[key: string]: ParameterAlias}}) => void;
 }) {
   const comfyui = useComfyUiStore();
   const [nodes, setNodes] = useState<Node[]>([]);
   const [defaultNodes, setDefaultNodes] = useState<Node[]>([]);
   const [prompt, setPrompt] = useState<string>();
-  const [alias, setAlias] = useState<{ [key: string]: ParameterAlias }>(alias1);
+  const [alias, setAlias] = useState<{[key: string]: {[key: string]: ParameterAlias}}>(alias1);
   useEffect(() => {
     if (api) {
       try {
@@ -204,9 +204,9 @@ export function ComfyUiApiParams({
                         <KeyValue
                           key1={key}
                           value={value}
-                          alias={alias[key]}
+                          alias={alias[node.id]?alias[node.id][key]:undefined}
                           onParameterChange={(aliasItem) => {
-                            setAlias({ ...alias, [key]: aliasItem });
+                            setAlias({ ...alias, [node.id]: {...alias[node.id], [key]: aliasItem} });
                           }}
                           setValue={(v1) => {
                             const obj = [...nodes].map((v, j) => {

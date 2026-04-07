@@ -18,7 +18,7 @@ export interface ComfyUiApi {
   name: string;
   server_url: string;
   prompt_api: string;
-  alias: {[key: string]: ParameterAlias};
+  alias: {[key: string]: {[key: string]: ParameterAlias}};
 }
 
 export interface ParameterAlias {
@@ -33,5 +33,5 @@ export interface NewComfyUiApi {
   name: string;
   server_url: string;
   prompt_api: string;
-  alias?: {[key: string]: ParameterAlias};
+  alias?: {[key: string]: {[key: string]: ParameterAlias}};
 }

@@ -101,7 +101,6 @@ export default function ({ nodes }: { nodes: Node[] }) {
       <div>{history?.outputs && JSON.stringify(history?.outputs)}</div>
       <div>
         {image && <LocalImage src={image} />}
-        {/* <img src={'asset://Users/liaojinlong/.prince_files/ed69a039-37ed-4685-86a7-bb72a77897be.png'} alt="Generated Image" /> */}
       </div>
     </div>
   );
