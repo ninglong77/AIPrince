@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ComfyUiHistory, useComfyUiStore, Node } from "../../states/comfyui";
-import { PrimaryButton, PrimaryTextButton } from "../buttons";
+import { PrimaryButton } from "../buttons";
 import { ComfyUiResult } from "../../services/comfyui";
 import { useNotification } from "../notification";
 import { LocalImage } from "../images";

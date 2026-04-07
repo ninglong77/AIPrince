@@ -41,7 +41,6 @@ export default function () {
   const { id } = useParams() as { id?: string };
   const [api, setApi] = useState<ComfyUiApi | undefined>();
   const [nodes, setNodes] = useState<Node[]>([]);
-  const [requiredNodes, setRequiredNodes] = useState<Node[]>([]);
   useEffect(() => {
     if (id) {
       const id0 = parseInt(id);
