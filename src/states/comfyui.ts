@@ -83,6 +83,7 @@ export const useComfyUiStore = create<ComfyUiStore>(() => ({
   wait_for_result: async (prompt_id: string): Promise<ComfyUiHistory> => {
     while (true) {
       const history: any = await get_history_cmd(prompt_id);
+      console.info('---->>>'+JSON.stringify(history))
       const obj = history[prompt_id] as ComfyUiHistory|undefined;
       if (obj && obj.status.completed) {
         return obj;

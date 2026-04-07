@@ -127,10 +127,6 @@ export default function () {
               保存
             </button>
           </div>
-          {/** 测试 */}
-          <div>
-            {JSON.stringify(alias)}
-          </div>
           <div>
             {prompt_api && <ComfyUiApiParams alias={alias || {}} onChangeAlias={alias1 => {
               console.info(JSON.stringify(alias1))

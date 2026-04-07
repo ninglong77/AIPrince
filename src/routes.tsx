@@ -4,6 +4,7 @@ import Index from "./pages/Index";
 import UI from "./pages/UI";
 import { ComfyUiApisPage } from "./pages/comfyui";
 import NewComfyUiApiPage from "./pages/comfyui/NewComfyUiApiPage";
+import ApiListPage from "./pages/comfyui/ApiListPage";
 import ApiPage from "./pages/comfyui/ApiPage";
 
 export default function AppRoutes() {
@@ -16,8 +17,8 @@ export default function AppRoutes() {
       <Route path="/comfyui" element={<ComfyUiApisPage />} />
       <Route path="/comfyui/new" element={<NewComfyUiApiPage />} />
       <Route path="/comfyui/edit/:editId" element={<NewComfyUiApiPage />} />
-      <Route path="/apis" element={<ApiPage />} />
-
+      <Route path="/apis" element={<ApiListPage />} />
+      <Route path="/apis/:id" element={<ApiPage />} />
     </Routes>
   );
 }

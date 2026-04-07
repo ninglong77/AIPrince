@@ -1,14 +1,11 @@
 /** 解析 ComfyUI API JSON 参数 */
 
-import { use, useEffect, useState } from "react";
-import { useNotification } from "../notification";
-import { ComfyUiResult } from "../../services/comfyui";
-import { PrimaryButton, PrimaryTextButton } from "../buttons";
-import { ComfyUiHistory, useComfyUiStore, Node } from "../../states/comfyui";
+import { useEffect, useState } from "react";
+import { PrimaryTextButton } from "../buttons";
+import { useComfyUiStore, Node } from "../../states/comfyui";
 import { Input, TextArea } from "../inputs";
-import { LocalImage } from "../images";
 import { ParameterAlias } from "../../common";
-
+import CallApi from "./CallApi";
 
 function InputValueSwitch({
   type,
@@ -70,7 +67,9 @@ function KeyValue({
   const [defaultValue, setDefaultValue] = useState<string | number | boolean>(
     alias1?.default || value,
   );
-  const [defaultValueType, setDefaultValueType] = useState<string|undefined>(alias1?.default_value_type);
+  const [defaultValueType, setDefaultValueType] = useState<string | undefined>(
+    alias1?.default_value_type,
+  );
   useEffect(() => {
     if (onParameterChange) {
       onParameterChange({
@@ -85,6 +84,11 @@ function KeyValue({
   useEffect(() => {
     setDefaultValueType(typeof value);
   }, [value]);
+  useEffect(() => {
+    if (alias1?.required) {
+      setDefaultValue(alias1.default!!);
+    }
+  }, []);
   return (
     <div className="flex flex-col">
       <div className="flex flex-row items-center">
@@ -109,33 +113,35 @@ function KeyValue({
         />
         <label className="ml-2">是否作为用户输入参数</label>
       </div>
-      {required && <div className="flex flex-col gap-2 py-4 pl-2">
-        {/** 如果勾选了 required，则显示一个输入框，用户可以输入参数别名 */}
-        <div className="flex flex-row items-center">
-          <div className="w-1/5">
-            <label className="w-20">别名</label>
+      {required && (
+        <div className="flex flex-col gap-2 py-4 pl-2">
+          {/** 如果勾选了 required，则显示一个输入框，用户可以输入参数别名 */}
+          <div className="flex flex-row items-center">
+            <div className="w-1/5">
+              <label className="w-20">别名</label>
+            </div>
+            <div>
+              <Input
+                value={alias as any}
+                setValue={setAlias as any}
+                placeholder="请输入参数别名"
+              />
+            </div>
           </div>
-          <div>
-            <Input
-              value={alias as any}
-              setValue={setAlias as any}
-              placeholder="请输入参数别名"
-            />
+          <div className="flex flex-row items-center">
+            <div className="w-1/5">参数默认值</div>
+            <div className="">
+              <InputValueSwitch
+                value={defaultValue as any}
+                setValue={setDefaultValue}
+                type={type as any}
+                defaultValueType={defaultValueType as any}
+              />
+            </div>
           </div>
         </div>
-        <div className="flex flex-row items-center">
-          <div className="w-1/5">参数默认值</div>
-          <div className="">
-            <InputValueSwitch
-              value={defaultValue as any}
-              setValue={setDefaultValue}
-              type={type as any}
-              defaultValueType={defaultValueType as any}
-            />
-          </div>
-        </div>
-      </div>}
-      
+      )}
+
       <InputValueSwitch
         value={value}
         setValue={setValue}
@@ -146,18 +152,20 @@ function KeyValue({
   );
 }
 
-export function ComfyUiApiParams({ api, onChangeAlias, alias: alias1 }: { api: string, alias: {[key: string]: ParameterAlias}, onChangeAlias?: (alias: {[key: string]: ParameterAlias}) => void}) {
+export function ComfyUiApiParams({
+  api,
+  onChangeAlias,
+  alias: alias1,
+}: {
+  api: string;
+  alias: { [key: string]: ParameterAlias };
+  onChangeAlias?: (alias: { [key: string]: ParameterAlias }) => void;
+}) {
   const comfyui = useComfyUiStore();
   const [nodes, setNodes] = useState<Node[]>([]);
   const [defaultNodes, setDefaultNodes] = useState<Node[]>([]);
   const [prompt, setPrompt] = useState<string>();
-  const [result, setResult] = useState<ComfyUiResult>();
-  const [submitting, setSubmitting] = useState(false);
-  const [history, setHistory] = useState<ComfyUiHistory>();
-  const [pending, setPending] = useState<boolean>(false);
-  const [image, setImage] = useState<string>();
-  const [alias, setAlias] = useState<{[key: string]: ParameterAlias}>(alias1);
-  const notification = useNotification();
+  const [alias, setAlias] = useState<{ [key: string]: ParameterAlias }>(alias1);
   useEffect(() => {
     if (api) {
       try {
@@ -176,7 +184,7 @@ export function ComfyUiApiParams({ api, onChangeAlias, alias: alias1 }: { api: s
     if (onChangeAlias) {
       onChangeAlias(alias);
     }
-  }, [alias])
+  }, [alias]);
   return (
     <>
       {nodes && (
@@ -197,11 +205,10 @@ export function ComfyUiApiParams({ api, onChangeAlias, alias: alias1 }: { api: s
                           key1={key}
                           value={value}
                           alias={alias[key]}
-                          onParameterChange={aliasItem => {
-                            setAlias({...alias, [key]: aliasItem})
+                          onParameterChange={(aliasItem) => {
+                            setAlias({ ...alias, [key]: aliasItem });
                           }}
                           setValue={(v1) => {
-                            console.info("---->>>" + v1 + typeof v1);
                             const obj = [...nodes].map((v, j) => {
                               return j === i
                                 ? {
@@ -222,100 +229,16 @@ export function ComfyUiApiParams({ api, onChangeAlias, alias: alias1 }: { api: s
               </div>
             ))}
           </div>
-          {/** 调用API */}
-          <div className="mt-4 flex border-t mb-8 py-4 border-slate-200 flex-col gap-2">
-            <div>
-              <PrimaryTextButton
-                onClick={() => {
-                  setNodes([...defaultNodes]);
-                }}
-              >
-                Reset
-              </PrimaryTextButton>
-            </div>
-            <div>
-              <PrimaryButton
-                disabled={!prompt || submitting || pending}
-                onClick={() => {
-                  if (!prompt) return;
-                  setSubmitting(true);
-                  comfyui
-                    .queue_prompt(nodes)
-                    .then((r) => {
-                      notification.success("调用成功");
-                      setResult(r);
-                      // wait for result
-                      setPending(true);
-                      comfyui
-                        .wait_for_result(r.prompt_id)
-                        .then((r) => {
-                          setHistory(r);
-                        })
-                        .catch((e) => {
-                          notification.error("调用 wait_for_result 失败:" + e);
-                        })
-                        .finally(() => {
-                          setPending(false);
-                        });
-                    })
-                    .catch((err) => {
-                      notification.error("调用失败:" + err);
-                    })
-                    .finally(() => {
-                      setSubmitting(false);
-                    });
-                }}
-              >
-                {pending ? "Pending" : "调用API"}
-              </PrimaryButton>
-            </div>
-            <div>
-              <PrimaryButton
-                disabled={!result}
-                onClick={() => {
-                  if (result) {
-                    comfyui
-                      .get_history(result.prompt_id)
-                      .then((r) => {
-                        setHistory(r);
-                      })
-                      .catch((err) => {
-                        notification.error("调用history失败:" + err);
-                      });
-                  }
-                }}
-              >
-                CheckHistory
-              </PrimaryButton>
-            </div>
-            <div>
-              <PrimaryButton
-                onClick={() => {
-                  if (history) {
-                    comfyui
-                      .get_image("http://192.168.31.99:18188", history)
-                      .then((r) => {
-                        if (r && r.length > 0) {
-                          setImage(r[0]);
-                        }
-                        notification.success("Download 成功" + r);
-                      })
-                      .catch((e) => {
-                        notification.error("Download 失败" + e);
-                      });
-                  }
-                }}
-              >
-                Download Image
-              </PrimaryButton>
-            </div>
-            <div>{history?.status.status_str}</div>
-            <div>{history?.outputs && JSON.stringify(history?.outputs)}</div>
-            <div>
-              {image && <LocalImage src={image} />}
-              {/* <img src={'asset://Users/liaojinlong/.prince_files/ed69a039-37ed-4685-86a7-bb72a77897be.png'} alt="Generated Image" /> */}
-            </div>
+          <div className="border-t border-slate-400/20 mt-8 pt-2">
+            <PrimaryTextButton
+              onClick={() => {
+                setNodes([...defaultNodes]);
+              }}
+            >
+              Reset
+            </PrimaryTextButton>
           </div>
+          {prompt && <CallApi nodes={nodes} />}
         </div>
       )}
     </>
