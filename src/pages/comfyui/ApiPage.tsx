@@ -103,7 +103,6 @@ export default function () {
           ))}
       </div>
       <div className="w-4/5">
-        {JSON.stringify(nodes)}
         <CallApi nodes={nodes} />
       </div>
       {/* 关闭按钮 (小叉) */}
