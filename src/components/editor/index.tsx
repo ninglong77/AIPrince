@@ -19,6 +19,7 @@ import {
 import { CustomHelper } from "./helper";
 import Toolbar from "./toolbar";
 import { ContentNode, EditorType } from "./types";
+import { withHistory } from "slate-history";
 
 // const initialValue1 = [
 //   {
@@ -95,7 +96,7 @@ export function MyEditor({
   initialValue: ContentNode[];
   onChange?: (content: ContentNode[]) => void;
 }) {
-  const [editor] = useState(() => withCodeBlock(withReact(createEditor())));
+  const [editor] = useState(() => withCodeBlock(withHistory(withReact(createEditor()))));
   const [content, setContent] = useState<ContentNode[]>(initialValue);
   useEffect(() => {
     onChange && onChange(content);
