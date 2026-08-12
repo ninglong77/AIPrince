@@ -6,7 +6,7 @@ import { v4 } from "uuid";
 import { add_ai_script, update_ai_script } from "../../services/ai_scripts";
 import { MyEditor } from "../../components/editor";
 import { ContentNode } from "../../components/editor/types";
-import { RolesCard } from "../../components/ai_scripts/analysis";
+import { RolesCard } from "../../components/ai_scripts/ScriptAnalysis";
 
 export default function NewAiScript() {
   // 分析当前是不是编辑模式：如果 URL 中有 editId 参数，则为编辑模式，否则为新增模式

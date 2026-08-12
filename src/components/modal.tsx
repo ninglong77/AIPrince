@@ -16,6 +16,23 @@ export interface ModalManager {
   pop: () => void;
 }
 
+
+/**
+ * 模态框管理器
+ * 
+ * Usage:
+ * ```
+ * const { open } = useModals();
+ * open({
+ *  title: "Title",
+ *  content: <div>Test</div>,
+ *  comfirmText: "Confirm",
+ *  cancelText: "Cancel",
+ *  onConfirm: () => {},
+ *  onClose: () => {},
+ * })
+ * ```
+ */
 export const useModals = create<ModalManager>((set) => ({
   open: (props) =>
     set((state) => ({
@@ -63,6 +80,18 @@ function Modal({ title, content, onConfirm, onClose, confirmText = "Confirm", ca
   </>
 }
 
+
+/**
+ * 模态框
+ * 
+ * Usage:
+ * 
+ * ```
+ * const { open } = useModals();
+ * ```
+ * @param param0 
+ * @returns 
+ */
 export function ModalRoot() {
   const { modals, pop } = useModals();
   return <>

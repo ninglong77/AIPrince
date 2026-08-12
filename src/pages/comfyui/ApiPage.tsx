@@ -35,23 +35,10 @@ function InputParameter({
   );
 }
 
-export default function () {
-  let navigate = useNavigate();
+
+export function ComfyUiApiComponent({api}: {api: ComfyUiApi}) {
   const comfyui = useComfyUiStore();
-  const { id } = useParams() as { id?: string };
-  const [api, setApi] = useState<ComfyUiApi | undefined>();
   const [nodes, setNodes] = useState<Node[]>([]);
-  useEffect(() => {
-    if (id) {
-      const id0 = parseInt(id);
-      get_comfyui_apis().then((apis) => {
-        if (apis.find((api) => api.id === id0)) {
-          const api = apis.find((api) => api.id === id0)!;
-          setApi(api);
-        }
-      });
-    }
-  }, [id]);
   useEffect(() => {
     if (api) {
       setNodes(comfyui.parse_prompt(api.prompt_api));
@@ -64,6 +51,7 @@ export default function () {
         {nodes
           .filter(
             (i) =>
+              // filter out nodes that don't have required parameters
               Object.keys(i.node.inputs).filter(
                 (j) => api?.alias[i.id] && api?.alias[i.id][j]?.required,
               ).length > 0,
@@ -105,6 +93,28 @@ export default function () {
       <div className="w-4/5">
         <CallApi nodes={nodes} />
       </div>
+    </div>
+  )
+}
+
+export default function () {
+  let navigate = useNavigate();
+  const { id } = useParams() as { id?: string };
+  const [api, setApi] = useState<ComfyUiApi | undefined>();
+  useEffect(() => {
+    if (id) {
+      const id0 = parseInt(id);
+      get_comfyui_apis().then((apis) => {
+        if (apis.find((api) => api.id === id0)) {
+          const api = apis.find((api) => api.id === id0)!;
+          setApi(api);
+        }
+      });
+    }
+  }, [id]);
+  return (
+    <div className="flex flex-col w-full items-center">
+      {api&&<ComfyUiApiComponent api={api!} />}
       {/* 关闭按钮 (小叉) */}
       <button
         onClick={() => {
