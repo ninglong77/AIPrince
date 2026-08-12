@@ -5,7 +5,7 @@ import { ComfyUiResult } from "../../services/comfyui";
 import { useNotification } from "../notification";
 import { LocalImage } from "../images";
 
-export default function ({ nodes }: { nodes: Node[] }) {
+export default function ({ nodes, onImageDownloaded }: { nodes: Node[], onImageDownloaded?: (image: string) => void }) {
   const comfyui = useComfyUiStore();
   const [result, setResult] = useState<ComfyUiResult>();
   const [submitting, setSubmitting] = useState(false);
@@ -85,6 +85,8 @@ export default function ({ nodes }: { nodes: Node[] }) {
                 .then((r) => {
                   if (r && r.length > 0) {
                     setImage(r[0]);
+                    // call back
+                    onImageDownloaded?.(r[0]);
                   }
                   notification.success("Download 成功" + r);
                 })
@@ -101,6 +103,7 @@ export default function ({ nodes }: { nodes: Node[] }) {
       <div>{history?.outputs && JSON.stringify(history?.outputs)}</div>
       <div>
         {image && <LocalImage src={image} />}
+        {image}
       </div>
     </div>
   );

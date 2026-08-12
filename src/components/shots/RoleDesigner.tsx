@@ -7,7 +7,7 @@ import { ComfyUiApi } from "../../common";
 import { useComfyUiApis } from "../../hooks/comfyui_apis";
 import { ComfyUiApiComponent } from "../../pages/comfyui/ApiPage";
 
-export default function RoleDesigner() {
+export default function RoleDesigner({onRoleCreated}: {onRoleCreated?: (image: string) => void}) {
   const {apis} = useComfyUiApis();
   const [api, setApi] = useState<ComfyUiApi | undefined>();
   useEffect(() => {
@@ -22,6 +22,6 @@ export default function RoleDesigner() {
         {apis.map(api => <option key={api.id}>{api.name}</option>)}
       </select>
     </div>
-    {api && <ComfyUiApiComponent api={api} />}
+    {api && <ComfyUiApiComponent api={api} onImageCreated={onRoleCreated} />}
   </div>
 }

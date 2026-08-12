@@ -36,7 +36,7 @@ function InputParameter({
 }
 
 
-export function ComfyUiApiComponent({api}: {api: ComfyUiApi}) {
+export function ComfyUiApiComponent({api, onImageCreated}: {api: ComfyUiApi, onImageCreated?: (image: string) => void}) {
   const comfyui = useComfyUiStore();
   const [nodes, setNodes] = useState<Node[]>([]);
   useEffect(() => {
@@ -91,7 +91,7 @@ export function ComfyUiApiComponent({api}: {api: ComfyUiApi}) {
           ))}
       </div>
       <div className="w-4/5">
-        <CallApi nodes={nodes} />
+        <CallApi nodes={nodes} onImageDownloaded={onImageCreated} />
       </div>
     </div>
   )

@@ -53,7 +53,7 @@ export default function () {
       return;
     }
     if (editId) {
-      console.info('---->>>'+JSON.stringify(alias))
+      // console.info('---->>>'+JSON.stringify(alias))
       update_comfyui_api(parseInt(editId), {
         name,
         server_url: url,

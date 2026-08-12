@@ -22,7 +22,7 @@ export async function add_comfyui_api(new_script: NewComfyUiApi) {
 }
 
 export async function update_comfyui_api(id: number, script: NewComfyUiApi) {
-    console.info("---->>>8888"+JSON.stringify(script.alias))
+    // console.info("---->>>8888"+JSON.stringify(script.alias))
     const r = await invoke('update_comfyui_api_cmd', {scriptId: id, updatedScript: {...script, alias: JSON.stringify(script.alias)}})
     return r
 }
