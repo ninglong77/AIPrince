@@ -1,6 +1,7 @@
 mod ai_scripts;
 pub mod comfyui;
 mod schema;
+mod kv;
 
 use diesel::prelude::*;
 use dotenvy::dotenv;
@@ -21,7 +22,7 @@ pub fn establish_connection() -> SqliteConnection {
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+    return format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -47,6 +48,9 @@ pub fn run() {
             crate::comfyui::commands::add_comfyui_api_cmd,
             crate::comfyui::commands::update_comfyui_api_cmd,
             crate::comfyui::get_and_save_image_cmd,
+            crate::kv::get_kv_store_cmd,
+            crate::kv::upsert_kv_store_cmd,
+            crate::kv::list_kv_store_cmd,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -7,6 +7,7 @@ import Sidebar from "./components/sidebar";
 import { NotificationContainer } from "./components/notification";
 import { warn, debug, trace, info, error } from '@tauri-apps/plugin-log';
 import { ModalRoot } from "./components/modal";
+import { KvRoot } from "./hooks/kv";
 
 function forwardConsole(
   fnName: 'log' | 'debug' | 'info' | 'warn' | 'error',
@@ -37,6 +38,7 @@ function App() {
     <main className="w-screen h-full mx-auto flex flex-col">
       <NotificationContainer />
       <ModalRoot />
+      <KvRoot />
       <div className="p-2">
         <div className="cursor-pointer w-6" onClick={() => setIsSidebarOpen(true)}>
           <NavIcon />

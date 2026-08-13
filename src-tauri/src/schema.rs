@@ -23,7 +23,18 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    kv_store (id) {
+        id -> Integer,
+        key -> Text,
+        value -> Text,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
 diesel::allow_tables_to_appear_in_same_query!(
     ai_scripts,
     comfyui_apis,
+    kv_store,
 );

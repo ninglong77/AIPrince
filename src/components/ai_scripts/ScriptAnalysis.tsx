@@ -8,7 +8,7 @@ import { useNotification } from "../notification";
 import { useModals } from "../modal";
 import RoleDesigner from "../shots/RoleDesigner";
 import { LocalImage } from "../images";
-import { useKvStore } from "../../hooks/kv";
+import { useKvStore } from "../../hooks/kv.tsx";
 
 
 export function RolesCard({ ai_script, id }: { id: number, ai_script: string }) {
