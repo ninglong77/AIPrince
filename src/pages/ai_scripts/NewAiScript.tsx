@@ -128,7 +128,7 @@ export default function NewAiScript() {
 
               {/** 剧本分析 */}
               <div>
-                <RolesCard ai_script={formData.content} />
+                {id && <RolesCard id={id} ai_script={formData.content} />}
               </div>
 
               {/* 内容文本域 */}

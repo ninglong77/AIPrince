@@ -8,22 +8,15 @@ import { useNotification } from "../notification";
 import { useModals } from "../modal";
 import RoleDesigner from "../shots/RoleDesigner";
 import { LocalImage } from "../images";
-
-const roleImagesCache: {[key: string]: string} = {}
-const setRoleImagesCache = (data: {[key: string]: string}) => {
-  Object.assign(roleImagesCache, data);
-}
-
-const roleImages: {[key: string]: string} = {}
-const setRoleImages = (data: {[key: string]: string}) => {
-  Object.assign(roleImages, data);
-}
+import { useKvStore } from "../../hooks/kv";
 
 
-export function RolesCard({ ai_script }: { ai_script: string }) {
+export function RolesCard({ ai_script, id }: { id: number, ai_script: string }) {
   const [roles, setRoles] = useState<Role[]>([]);
   const notification = useNotification();
   const {open} = useModals();
+  const roleImages = useKvStore().store('RoleImages').store(''+id)
+  const roleImagesCache = useKvStore().store('RoleImagesCache').store(''+id).store('cache')
   useEffect(() => {
     try {
       if (ai_script) {
@@ -35,12 +28,9 @@ export function RolesCard({ ai_script }: { ai_script: string }) {
   }, [ai_script])
 
 
-  const setRoleImageFromCache = (roleName: string) => {
-    if (roleImagesCache[roleName]) {
-      setRoleImages({
-        ...roleImages,
-        [roleName]: roleImagesCache[roleName],
-      })
+  const setRoleImageFromCache = async (roleName: string) => {
+    if (roleImagesCache.get(roleName)) {
+      await roleImages.set(roleName, roleImagesCache.get(roleName))
     }
   }
   return <div>
@@ -52,21 +42,22 @@ export function RolesCard({ ai_script }: { ai_script: string }) {
           open({
             title: `${role.name}`,
             content: <RoleDesigner onRoleCreated={(image) => {
-              setRoleImagesCache({
-                ...roleImagesCache,
-                [role.name]: image,
+              roleImagesCache.set(role.name, image).then(() => {
+                console.info('setRoleImagesCache success: '+ role.name+','+ image)
               })
             }} />,
             comfirmText: "Confirm",
             cancelText: "Cancel",
             onConfirm: () => {
-              setRoleImageFromCache(role.name)
+              setRoleImageFromCache(role.name).then(() => {
+                console.info('setRoleImages from cache success: '+ role.name)
+              })
             },
             onClose: () => {},
           })
         }} key={index} className="cursor-pointer flex justify-center items-center flex-col gap-1">
           <div className="text-md text-slate-800 rounded-md w-24 h-32 bg-slate-300">
-            {roleImages[role.name] && <LocalImage className="w-24 max-h-32 rounded-md" src={roleImages[role.name]} />}
+            {roleImages.get(role.name) && <LocalImage className="w-24 max-h-32 rounded-md" src={roleImages.get(role.name)} />}
           </div>
           <div className="text-slate-400 text-sm self-center">{role.name}</div>
         </div>
