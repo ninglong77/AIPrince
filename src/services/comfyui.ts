@@ -4,7 +4,7 @@ import { ComfyUiApi, NewComfyUiApi } from "../common";
 export async function get_comfyui_apis() {
     const scripts = await invoke("comfyui_apis_cmd") as ComfyUiApi[];
     return scripts.map(i => {
-      console.info('777'+i.alias)
+      // console.info('777'+i.alias)
       return {
         ...i, alias: JSON.parse(i.alias as unknown as string)
       }

@@ -40,6 +40,7 @@ export function ComfyUiApiComponent({api, onImageCreated}: {api: ComfyUiApi, onI
   const comfyui = useComfyUiStore();
   const [nodes, setNodes] = useState<Node[]>([]);
   useEffect(() => {
+    console.info(api);
     if (api) {
       setNodes(comfyui.parse_prompt(api.prompt_api));
     }
