@@ -9,8 +9,8 @@ export function Button({ children, onClick, className, disabled }: { children: R
     </button>
 }
 
-export function PrimaryTextButton({ children, className, onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) {
-    return <button className={`cursor-pointer text-blue-600 hover:text-blue-700 font-medium rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${className || ''}`} onClick={onClick}>{children}</button>
+export function PrimaryTextButton({ children, className, onClick, disabled }: { children: React.ReactNode, className?: string, onClick?: () => void, disabled?: boolean }) {
+    return <button disabled={disabled} className={`cursor-pointer text-blue-600 hover:text-blue-700 font-medium rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${className || ''} ${disabled? 'opacity-50 cursor-not-allowed' : ''} `} onClick={onClick}>{children}</button>
 }
 
 export function DangerButton({ children, className, onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) {

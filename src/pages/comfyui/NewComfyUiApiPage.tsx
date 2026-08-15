@@ -9,10 +9,14 @@ import {
 } from "../../services/comfyui";
 import { ComfyUiApiParams } from "../../components/comfyui/Parameters";
 import { ParameterAlias } from "../../common";
+import { PrimaryTextButton } from "../../components/buttons";
+import { useModals } from "../../components/modal";
+import ComfyUiAssets from "./ComfyUiAssets";
 
 export default function () {
   let navigate = useNavigate();
   const notification = useNotification();
+  const modal = useModals();
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [prompt_api, setPromptApi] = useState("");
@@ -95,12 +99,18 @@ export default function () {
               placeholder="请输入 API 名称"
             />
           </section>
-          <section className="w-48">
+          <section className="w-96 flex flex-row gap-2">
             <Input
               value={url}
               setValue={setUrl as any}
               placeholder="请输入 ComfyUI 地址"
             />
+            {url && <PrimaryTextButton onClick={() => {
+              modal.open({
+                title: "ComfyUI 资源",
+                content: <ComfyUiAssets server={url} />,
+              });
+            }} className="w-48 text-left">show assets</PrimaryTextButton>}
           </section>
           <section className="flex flex-row items-end">
             {/* 文本域 */}

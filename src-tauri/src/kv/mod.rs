@@ -42,10 +42,7 @@ pub fn get_kv_store(key1: String) -> Option<KvStore> {
 
     let conn = &mut establish_connection();
 
-    kv_store
-        .filter(key.eq(key1))
-        .first::<KvStore>(conn)
-        .ok()
+    kv_store.filter(key.eq(key1)).first::<KvStore>(conn).ok()
 }
 
 pub fn list_kv_store() -> Vec<KvStore> {
@@ -74,7 +71,6 @@ pub fn upsert_kv_store_cmd(key: String, value: String) -> bool {
 pub fn list_kv_store_cmd() -> Vec<KvStore> {
     list_kv_store()
 }
-
 
 #[cfg(test)]
 mod tests {

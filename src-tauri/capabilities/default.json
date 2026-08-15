@@ -15,7 +15,20 @@
     "fs:allow-exists",
     {
       "identifier": "fs:scope",
-      "allow": [{ "path": "$HOME/.*/**" }]
-    }
+      "allow": [
+        {
+          "path": "$HOME/.*/**"
+        }
+      ]
+    },
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "http://*:*"
+        }
+      ]
+    },
+    "http:default"
   ]
 }
