@@ -33,21 +33,33 @@ async function get_assets(server: string, limit = 100, offset = 0) {
   return await fetch(url).then((res) => res.json()) as AllAssets;
 }
 
+/** Show image when clicked  */
+function ImageComp({image}: {image: string}) {
+  const [show, setShow] = useState(false);
+  return <div>
+    <img src={image} alt="asset" onClick={() => setShow(true)} />
+    {show && <div className="fixed overflow-scroll top-0 left-0 flex flex-row justify-center items-center w-screen h-screen z-100 bg-black/80" onClick={() => setShow(false)}>
+      <img className="max-w-75" src={image} alt="asset" />
+    </div>}
+  </div>
+}
+
 function AssetComp({server, asset}: {asset: Asset, server: string}) {
   server = server.replace(/\/$/, "");
   return (
-    <div className="asset">
-      <img src={`${server}${asset.preview_url}`} alt={asset.name} />
-      <div className="asset-info">
-        <div className="asset-name">{asset.name}</div>
-        <div className="asset-size">{asset.size}</div>
+    <div className="w-24">
+      {/* <img className="" src={`${server}${asset.preview_url}`} alt={asset.name} /> */}
+      <ImageComp image={`${server}${asset.preview_url}`} />
+      <div className="">
+        <div className="text-sm overflow-clip text-ellipsis">{asset.name}</div>
+        <div className="text-xs">{asset.size / 1024} KB</div>
         {/** tags */}
-        <div className="flex flex-row text-sm gap-2 text-slate-500">
+        {/* <div className="flex flex-row text-sm gap-2 text-slate-500">
           {asset.tags.map((tag) => (
             <span key={tag}>{tag}</span>
           ))}
-        </div>
-        <div>user metadata: {JSON.stringify(asset.user_metadata)}</div>
+        </div> */}
+        {/* <div>user metadata: {JSON.stringify(asset.user_metadata)}</div> */}
       </div>
     </div>
   );
@@ -82,7 +94,9 @@ export default function ({server}: {server: string}) {
   // const assets = get_assets(server);
   return <div className="flex flex-col gap-1">
     {loading && <div className="text-slate-400 opacity-50">Loading...</div>}
+    <div className="flex flex-row gap-1 flex-wrap">
     {assets.map(asset => <AssetComp server={server} key={asset.id} asset={asset} />)}
+    </div>
     {/** Pagination */}
     <div className="flex flex-row gap-1">
       <PrimaryTextButton onClick={() => setOffset(Math.max(offset - limit, 0))} disabled={offset <= 0}>Prev</PrimaryTextButton>
