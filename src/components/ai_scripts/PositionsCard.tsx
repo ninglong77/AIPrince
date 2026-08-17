@@ -3,19 +3,19 @@
  */
 
 import { useEffect, useState } from "react";
-import { extract_postion, extract_roles, Position, Role } from "../../services/analysis";
+import { extract_postion, Position } from "../../services/analysis";
 import { useNotification } from "../notification";
 import { useModals } from "../modal";
-import RoleDesigner from "../shots/RoleDesigner";
 import { LocalImage } from "../images";
 import { useKvStore } from "../../hooks/kv.tsx";
+import PositionDesigner from "../shots/PositionDesigner.tsx";
 
 export function PositionsCard({ ai_script, id }: { id: number, ai_script: string }) {
   const [positions, setPositions] = useState<Position[]>([]);
   const notification = useNotification();
   const {open} = useModals();
-  const roleImages = useKvStore().store('RoleImages').store(''+id)
-  const roleImagesCache = useKvStore().store('RoleImagesCache').store(''+id).store('cache')
+  const positionImages = useKvStore().store('PositionImages').store(''+id)
+  const positionImagesCache = useKvStore().store('PositionImagesCache').store(''+id).store('cache')
   useEffect(() => {
     try {
       if (ai_script) {
@@ -27,9 +27,9 @@ export function PositionsCard({ ai_script, id }: { id: number, ai_script: string
   }, [ai_script])
 
 
-  const setRoleImageFromCache = async (roleName: string) => {
-    if (roleImagesCache.get(roleName)) {
-      await roleImages.set(roleName, roleImagesCache.get(roleName))
+  const setPositionImageFromCache = async (roleName: string) => {
+    if (positionImagesCache.get(roleName)) {
+      await positionImages.set(roleName, positionImagesCache.get(roleName))
     }
   }
   return <div>
@@ -38,25 +38,25 @@ export function PositionsCard({ ai_script, id }: { id: number, ai_script: string
       {positions.length === 0 && (<div className="text-slate-400 text-sm">暂无数据</div>)}
       {positions.map((position, index) => (
         <div onClick={() => {
-          // open({
-          //   title: `${role.name}`,
-          //   content: <RoleDesigner onRoleCreated={(image) => {
-          //     roleImagesCache.set(role.name, image).then(() => {
-          //       console.info('setRoleImagesCache success: '+ role.name+','+ image)
-          //     })
-          //   }} />,
-          //   comfirmText: "Confirm",
-          //   cancelText: "Cancel",
-          //   onConfirm: () => {
-          //     setRoleImageFromCache(role.name).then(() => {
-          //       console.info('setRoleImages from cache success: '+ role.name)
-          //     })
-          //   },
-          //   onClose: () => {},
-          // })
+          open({
+            title: `${position.name}`,
+            content: <PositionDesigner onRoleCreated={(image) => {
+              positionImagesCache.set(position.name, image).then(() => {
+                console.info('setRoleImagesCache success: '+ position.name+','+ image)
+              })
+            }} />,
+            comfirmText: "Confirm",
+            cancelText: "Cancel",
+            onConfirm: () => {
+              setPositionImageFromCache(position.name).then(() => {
+                console.info('setPositionImages from cache success: '+ position.name)
+              })
+            },
+            onClose: () => {},
+          })
         }} key={index} className="cursor-pointer flex justify-center items-center flex-col gap-1">
           <div className="text-md text-slate-800 rounded-md w-24 h-32 bg-slate-300">
-            {/* {roleImages.get(role.name) && <LocalImage className="w-24 max-h-32 rounded-md" src={roleImages.get(role.name)} />} */}
+            {positionImages.get(position.name) && <LocalImage className="w-24 max-h-32 rounded-md" src={positionImages.get(position.name)} />}
           </div>
           <div className="text-slate-400 text-sm self-center">{position.name}</div>
         </div>
