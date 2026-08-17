@@ -10,6 +10,12 @@ export const CustomHelper = {
 
     return !!match;
   },
+  isPositionActive(editor: EditorType) {
+    const [match] = Editor.nodes(editor, {
+      match: (n) => (n as any).position,
+    });
+    return !!match;
+  },
   // 切换代码块
   toggleCodeBlock(editor: EditorType) {
     const isActive = CustomHelper.isCodeBlockActive(editor);
@@ -48,6 +54,7 @@ export const CustomHelper = {
       { type: "element", key: "shot", trigger: "shot" },
       { type: "style", key: "role", trigger: "role" },
       { type: "style", key: "action", trigger: "action" },
+      { type: "style", key: "position", trigger: "position" },
       { type: "style", key: "background", trigger: "background" },
       { type: "style", key: "dialog", trigger: "dialog" },
     ];
@@ -71,7 +78,7 @@ export const CustomHelper = {
           if (match) {
             Editor.removeMark(editor, key);
           } else {
-            const attrs = ['role', 'action', 'background', 'dialog']
+            const attrs = ['role', 'action', 'background', 'dialog', 'position']
             // 以上四个属性具有排他性，添加其中一个，则需要remove其他三个
             if (attrs.includes(key)) {
               attrs.forEach((attr) => {

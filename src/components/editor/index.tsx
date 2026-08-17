@@ -13,6 +13,7 @@ import {
   ActionElement,
   BackgroundElement,
   DialogElement,
+  PositionElement,
   RoleElement,
   ShotElement,
 } from "./shot_elements";
@@ -41,6 +42,9 @@ const Leaf = (props: any) => {
   }
   if (props.leaf.dialog) {
     return <DialogElement {...props} />;
+  }
+  if (props.leaf.position) {  
+    return <PositionElement {...props} />;
   }
   let text_decoration = "none";
   if (props.leaf.underline) {
@@ -115,6 +119,8 @@ export function MyEditor({
         return <ShotElement {...props} />;
       case "icon":
         return <IconElement {...props} />;
+      case "position":
+        return <PositionElement {...props} />;
       default:
         return <DefaultElement {...props} />;
     }
@@ -179,6 +185,10 @@ export function MyEditor({
               //   const [node] = match;
                 
               // }
+            }
+            // 如果当前是 position，用户按下回车键，移除 postion mark
+            if (event.key === "Enter" && CustomHelper.isPositionActive(editor)) {
+              CustomHelper.toggleByTrigger(editor, 'position');
             }
             // 如果当前是 role，并且用户按下了换行符符空格键或者：或者:，移除 role mark
             if (

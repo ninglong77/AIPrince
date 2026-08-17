@@ -86,6 +86,12 @@ export default function Toolbar({ editor }: { editor: EditorType }) {
           placeholder: "Role",
         },
         {
+          comp: <span>Postition</span>,
+          name: "Position",
+          trigger: "position",
+          placeholder: "场景、地点",
+        },
+        {
           comp: <ActionIcon />,
           name: "Action",
           trigger: "action",

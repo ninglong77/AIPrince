@@ -38,7 +38,21 @@ export const ShotElement = (props: any) => {
  */
 export const RoleElement = (props: any) => {
   return (
-    <span className="text-yellow-500 px-1 font-bold" {...props.attributes}>
+    <span className="text-yellow-500 font-bold pr-1" {...props.attributes}>
+      {/* <span style={{height: 16, width: 16}} className="inline-block"><RoleIcon /></span> */}
+      {props.children}
+    </span>
+  );
+}
+
+/**
+ * 场景元素
+ * @param props 
+ * @returns 
+ */
+export const PositionElement = (props: any) => {
+  return (
+    <span className="text-cyan-500 font-bold" {...props.attributes}>
       {/* <span style={{height: 16, width: 16}} className="inline-block"><RoleIcon /></span> */}
       {props.children}
     </span>
@@ -53,7 +67,7 @@ export const RoleElement = (props: any) => {
  */
 export const ActionElement = (props: any) => {
   return (
-    <span className="text-green-500 px-1" {...props.attributes}>
+    <span className="text-green-500" {...props.attributes}>
       {/* <span style={{height: 16, width: 16}} className="inline-block"><ActionIcon /></span> */}
       {props.children}
     </span>
@@ -68,7 +82,7 @@ export const ActionElement = (props: any) => {
  */
 export const BackgroundElement = (props: any) => {
   return (
-    <span className="text-blue-500 px-1" {...props.attributes}>
+    <span className="text-blue-500" {...props.attributes}>
       {/* <span style={{height: 16, width: 16}} className="inline-block"><BackgroundIcon /></span> */}
       {props.children}
     </span>
@@ -83,7 +97,7 @@ export const BackgroundElement = (props: any) => {
  */
 export const DialogElement = (props: any) => {
   return (
-    <span className="text-pink-500 px-1" {...props.attributes}>
+    <span className="text-pink-500" {...props.attributes}>
       {/* <span style={{height: 16, width: 16}} className="inline-block"><DialogIcon /></span> */}
       {props.children}
     </span>
