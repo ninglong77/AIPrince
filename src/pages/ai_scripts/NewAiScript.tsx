@@ -8,6 +8,7 @@ import { MyEditor } from "../../components/editor";
 import { ContentNode } from "../../components/editor/types";
 import { RolesCard } from "../../components/ai_scripts/RolesCard";
 import { PositionsCard } from "../../components/ai_scripts/PositionsCard";
+import { ShotsCard } from "../../components/ai_scripts/ShotsCard";
 
 export default function NewAiScript() {
   // 分析当前是不是编辑模式：如果 URL 中有 editId 参数，则为编辑模式，否则为新增模式
@@ -131,6 +132,7 @@ export default function NewAiScript() {
               {id && <div className="flex flex-col gap-2">
                 <RolesCard id={id} ai_script={formData.content} />
                 <PositionsCard id={id} ai_script={formData.content} />
+                <ShotsCard id={id} ai_script={formData.content} />
               </div>}
 
               {/* 内容文本域 */}

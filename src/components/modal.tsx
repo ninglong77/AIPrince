@@ -8,6 +8,7 @@ export interface ModalProps {
   cancelText?: string;
   onConfirm?: () => void;
   onClose?: () => void;
+  extraClassName?: string;
 }
 
 export interface ModalManager {
@@ -42,12 +43,12 @@ export const useModals = create<ModalManager>((set) => ({
   modals: [],
 }));
 
-function Modal({ title, content, onConfirm, onClose, confirmText = "Confirm", cancelText = "Cancel" }: { title: string; content: ReactNode; onConfirm?: () => void; onClose?: () => void, confirmText?: string, cancelText?: string }) {
+function Modal({ title, content, onConfirm, onClose, confirmText = "Confirm", cancelText = "Cancel", extraClassName="max-w-md" }: { title: string; content: ReactNode; onConfirm?: () => void; onClose?: () => void, confirmText?: string, cancelText?: string, extraClassName?: string }) {
   return <>
     <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="fixed inset-0 bg-gray-800/50 transition-opacity" onClick={onClose}></div>
           <div className="flex min-h-full items-center justify-center p-4">
-            <div className="relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 border border-gray-200 transform transition-all">
+            <div className={"relative bg-white rounded-xl shadow-xl w-full p-6 border border-gray-200 transform transition-all "+extraClassName}>
               <h3 className="text-xl font-semibold text-gray-800 mb-4">{title}</h3>
               <p className="text-gray-600 mb-6">
                 {content}
