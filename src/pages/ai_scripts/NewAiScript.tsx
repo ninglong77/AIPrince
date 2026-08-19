@@ -6,7 +6,7 @@ import { v4 } from "uuid";
 import { add_ai_script, update_ai_script } from "../../services/ai_scripts";
 import { MyEditor } from "../../components/editor";
 import { ContentNode } from "../../components/editor/types";
-import { RolesCard } from "../../components/ai_scripts/ScriptAnalysis";
+import { RolesCard } from "../../components/ai_scripts/RolesCard";
 import { PositionsCard } from "../../components/ai_scripts/PositionsCard";
 
 export default function NewAiScript() {

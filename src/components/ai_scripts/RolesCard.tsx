@@ -3,11 +3,11 @@
  */
 
 import { useEffect, useState } from "react";
-import { extract_roles, Role } from "../../services/analysis";
-import { useNotification } from "../notification";
-import { useModals } from "../modal";
-import RoleDesigner from "../shots/RoleDesigner";
-import { LocalImage } from "../images";
+import { extract_roles, Role } from "../../services/analysis.ts";
+import { useNotification } from "../notification.tsx";
+import { useModals } from "../modal.tsx";
+import RoleDesigner from "../shots/RoleDesigner.tsx";
+import { LocalImage } from "../images.tsx";
 import { useKvStore } from "../../hooks/kv.tsx";
 
 
