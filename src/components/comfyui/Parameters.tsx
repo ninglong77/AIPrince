@@ -1,23 +1,45 @@
 /** 解析 ComfyUI API JSON 参数 */
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PrimaryTextButton } from "../buttons";
 import { useComfyUiStore, Node } from "../../states/comfyui";
 import { Input, TextArea } from "../inputs";
 import { ParameterAlias } from "../../common";
 import CallApi from "./CallApi";
+import { LocalImage } from "../images";
+import { Modal, useModals } from "../modal";
+import ComfyUiAssets, { Asset, ComfyUiAssetsSelectorModal } from "../../pages/comfyui/ComfyUiAssets";
 
 export function InputValueSwitch({
   type,
   value,
   setValue,
   defaultValueType,
+  comfyui_url,
 }: {
-  type: "input" | "textarea";
+  type: "input" | "textarea" | "image";
   value: string | number | boolean;
   setValue: (value: string | number | boolean) => void;
   defaultValueType: "string" | "number" | "boolean";
+  comfyui_url?: string;
 }) {
+  const modal = useModals();
+  const [asset, setAsset] = useState<Asset>();
+  useEffect(() => {
+    if (type === "image" && asset) {
+      console.info(JSON.stringify(asset))
+      setValue(asset.preview_url);
+    }
+  }, [asset]);
+  const openModal = () => {
+    if (comfyui_url) {
+      modal.open(
+        <ComfyUiAssetsSelectorModal server={comfyui_url} onSelected={(asset) => { 
+          setAsset(asset);
+        }} />
+      );
+    }
+  };
   return (
     <>
       {defaultValueType === "number" && (
@@ -33,14 +55,32 @@ export function InputValueSwitch({
       )}
       {defaultValueType === "string" && (
         <>
-          {type === "input" ? (
+          {type === "input" && (
             <Input value={value as string} setValue={setValue} />
-          ) : (
+          )}
+          {type === "textarea" && (
             <TextArea
               className=" min-h-48"
               value={value as string}
               setValue={setValue}
             />
+          )}
+          {type === "image" && (
+            <div>
+              <div>{value}</div>
+              {!comfyui_url ? (
+                <div className="text-sm text-slate-400">No comfyUI url</div>
+              ) : (
+                <PrimaryTextButton
+                  onClick={() => {
+                    openModal();
+                  }}
+                  className="w-48 text-left"
+                >
+                  select
+                </PrimaryTextButton>
+              )}
+            </div>
           )}
         </>
       )}
@@ -54,12 +94,14 @@ function KeyValue({
   setValue,
   alias: alias1,
   onParameterChange,
+  comfyui_url,
 }: {
   key1: string;
   value: string | number | boolean;
   setValue: (value: string | number | boolean) => void;
   alias?: ParameterAlias;
   onParameterChange?: (parameterAlias: ParameterAlias) => void;
+  comfyui_url?: string;
 }) {
   const [type, setType] = useState<string>(alias1?.type || "input");
   const [required, setRequired] = useState<boolean>(alias1?.required || false);
@@ -103,6 +145,8 @@ function KeyValue({
         >
           <option value="input">input</option>
           <option value="textarea">textarea</option>
+          {/** 如果输入是图片，需允许用户从 comfyui assets 中选择图片 */}
+          <option value="image">image</option>
         </select>
         {/** 增加一个复选框，勾选是否作为可供用户看到的输入参数  */}
         <input
@@ -136,6 +180,7 @@ function KeyValue({
                 setValue={setDefaultValue}
                 type={type as any}
                 defaultValueType={defaultValueType as any}
+                comfyui_url={comfyui_url}
               />
             </div>
           </div>
@@ -147,6 +192,7 @@ function KeyValue({
         setValue={setValue}
         type={type as any}
         defaultValueType={defaultValueType as any}
+        comfyui_url={comfyui_url}
       />
     </div>
   );
@@ -156,16 +202,22 @@ export function ComfyUiApiParams({
   api,
   onChangeAlias,
   alias: alias1,
+  comfyui_url,
 }: {
   api: string;
-  alias: {[key: string]: {[key: string]: ParameterAlias}};
-  onChangeAlias?: (alias: {[key: string]: {[key: string]: ParameterAlias}}) => void;
+  alias: { [key: string]: { [key: string]: ParameterAlias } };
+  onChangeAlias?: (alias: {
+    [key: string]: { [key: string]: ParameterAlias };
+  }) => void;
+  comfyui_url?: string;
 }) {
   const comfyui = useComfyUiStore();
   const [nodes, setNodes] = useState<Node[]>([]);
   const [defaultNodes, setDefaultNodes] = useState<Node[]>([]);
   const [prompt, setPrompt] = useState<string>();
-  const [alias, setAlias] = useState<{[key: string]: {[key: string]: ParameterAlias}}>(alias1);
+  const [alias, setAlias] = useState<{
+    [key: string]: { [key: string]: ParameterAlias };
+  }>(alias1);
   useEffect(() => {
     if (api) {
       try {
@@ -204,9 +256,18 @@ export function ComfyUiApiParams({
                         <KeyValue
                           key1={key}
                           value={value}
-                          alias={alias[node.id]?alias[node.id][key]:undefined}
+                          comfyui_url={comfyui_url}
+                          alias={
+                            alias[node.id] ? alias[node.id][key] : undefined
+                          }
                           onParameterChange={(aliasItem) => {
-                            setAlias({ ...alias, [node.id]: {...alias[node.id], [key]: aliasItem} });
+                            setAlias({
+                              ...alias,
+                              [node.id]: {
+                                ...alias[node.id],
+                                [key]: aliasItem,
+                              },
+                            });
                           }}
                           setValue={(v1) => {
                             const obj = [...nodes].map((v, j) => {

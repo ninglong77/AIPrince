@@ -77,7 +77,6 @@ const AiScriptManager: React.FC = () => {
       setCurrentPage(page);
     }
   };
-
   useEffect(() => {
     console.log('---->>>refresh')
     refresh();

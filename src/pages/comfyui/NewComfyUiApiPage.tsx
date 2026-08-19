@@ -138,7 +138,7 @@ export default function () {
             </button>
           </div>
           <div>
-            {prompt_api && <ComfyUiApiParams alias={alias || {}} onChangeAlias={alias1 => {
+            {prompt_api && <ComfyUiApiParams comfyui_url={url} alias={alias || {}} onChangeAlias={alias1 => {
               setAlias(alias1)
             }} api={prompt_api} />}
           </div>

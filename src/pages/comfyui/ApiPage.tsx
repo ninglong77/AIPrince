@@ -14,9 +14,11 @@ function InputParameter({
     default_value_type: defaultValueType,
   },
   setValue: setValue1,
+  comfyui_url
 }: {
   param: ParameterAlias;
   setValue: (value: string | number | boolean) => void;
+  comfyui_url?: string
 }) {
   const [value, setValue] = useState(defaultValue);
   useEffect(() => {
@@ -29,6 +31,7 @@ function InputParameter({
         value={value as any}
         setValue={setValue}
         type={type as any}
+        comfyui_url={comfyui_url}
         defaultValueType={defaultValueType as any}
       />
     </div>
@@ -67,7 +70,7 @@ export function ComfyUiApiComponent({api, onImageCreated}: {api: ComfyUiApi, onI
                 .map((i, j) => {
                   return (
                     <div key={j}>
-                      <InputParameter setValue={(value) => {
+                      <InputParameter comfyui_url={api.server_url} setValue={(value) => {
                         // change the value of the nodes
                         setNodes(nodes.map((n) => {
                           if (n.id === node.id) {
@@ -92,6 +95,7 @@ export function ComfyUiApiComponent({api, onImageCreated}: {api: ComfyUiApi, onI
           ))}
       </div>
       <div className="w-4/5">
+        {JSON.stringify(nodes)}
         <CallApi nodes={nodes} onImageDownloaded={onImageCreated} />
       </div>
     </div>
