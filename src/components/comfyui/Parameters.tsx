@@ -8,7 +8,7 @@ import { ParameterAlias } from "../../common";
 import CallApi from "./CallApi";
 import { LocalImage } from "../images";
 import { Modal, useModals } from "../modal";
-import ComfyUiAssets, { Asset, ComfyUiAssetsSelectorModal } from "../../pages/comfyui/ComfyUiAssets";
+import ComfyUiAssets, { Asset, ComfyUiAssetsSelectorModal } from "./ComfyUiAssets";
 
 export function InputValueSwitch({
   type,

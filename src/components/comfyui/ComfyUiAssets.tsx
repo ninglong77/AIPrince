@@ -4,8 +4,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { fetch } from "@tauri-apps/plugin-http";
-import { PrimaryTextButton } from "../../components/buttons";
-import { Modal, useModals } from "../../components/modal";
+import { PrimaryTextButton } from "../buttons";
+import { Modal, useModals } from "../modal";
 
 export interface Asset {
   id: string;

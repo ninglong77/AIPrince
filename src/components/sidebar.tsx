@@ -44,6 +44,7 @@ export default function Sidebar({
                   <LinkComp page="/">AI Scripts</LinkComp>
                   <LinkComp page="/apis">APIs</LinkComp>
                   <LinkComp page="/comfyui">ComfyUI Manager</LinkComp>
+                  <LinkComp page="/assets_manager">资源管理</LinkComp>
                   <LinkComp page="/ui">UI Elements</LinkComp>
                 </nav>
               </div>

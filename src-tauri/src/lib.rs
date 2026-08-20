@@ -2,6 +2,7 @@ mod ai_scripts;
 pub mod comfyui;
 mod kv;
 mod schema;
+mod assets;
 
 use diesel::prelude::*;
 use dotenvy::dotenv;
@@ -52,6 +53,9 @@ pub fn run() {
             crate::kv::get_kv_store_cmd,
             crate::kv::upsert_kv_store_cmd,
             crate::kv::list_kv_store_cmd,
+            crate::assets::get_assets_cmd,
+            crate::assets::insert_assets_cmd,
+            crate::assets::list_assets_cmd,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

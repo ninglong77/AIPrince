@@ -6,6 +6,7 @@ import { ComfyUiApisPage } from "./pages/comfyui";
 import NewComfyUiApiPage from "./pages/comfyui/NewComfyUiApiPage";
 import ApiListPage from "./pages/comfyui/ApiListPage";
 import ApiPage from "./pages/comfyui/ApiPage";
+import AssetsManager from "./pages/assets_manager/AssetsManager";
 
 export default function AppRoutes() {
   return (
@@ -19,6 +20,7 @@ export default function AppRoutes() {
       <Route path="/comfyui/edit/:editId" element={<NewComfyUiApiPage />} />
       <Route path="/apis" element={<ApiListPage />} />
       <Route path="/apis/:id" element={<ApiPage />} />
+      <Route path="/assets_manager" element={<AssetsManager />} />
     </Routes>
   );
 }

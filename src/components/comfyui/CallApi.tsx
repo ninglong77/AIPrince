@@ -4,6 +4,7 @@ import { PrimaryButton } from "../buttons";
 import { ComfyUiResult } from "../../services/comfyui";
 import { useNotification } from "../notification";
 import { LocalImage } from "../images";
+import { create_local_asset } from "../../services/assets_manager";
 
 export default function ({ nodes, onImageDownloaded }: { nodes: Node[], onImageDownloaded?: (image: string) => void }) {
   const comfyui = useComfyUiStore();
@@ -87,6 +88,12 @@ export default function ({ nodes, onImageDownloaded }: { nodes: Node[], onImageD
                     setImage(r[0]);
                     // call back
                     onImageDownloaded?.(r[0]);
+                    // add to local assets manager
+                    create_local_asset(r[0], []).then(() => {
+                      notification.success("Add to local assets manager");
+                    }).catch(e => {
+                      notification.error("Add to local assets manager failed" + e);
+                    })
                   }
                   notification.success("Download 成功" + r);
                 })

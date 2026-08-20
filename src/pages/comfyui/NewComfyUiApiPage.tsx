@@ -11,7 +11,7 @@ import { ComfyUiApiParams } from "../../components/comfyui/Parameters";
 import { ParameterAlias } from "../../common";
 import { PrimaryTextButton } from "../../components/buttons";
 import { useModals } from "../../components/modal";
-import ComfyUiAssets from "./ComfyUiAssets";
+import ComfyUiAssets from "../../components/comfyui/ComfyUiAssets";
 
 export default function () {
   let navigate = useNavigate();

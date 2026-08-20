@@ -12,6 +12,18 @@ diesel::table! {
 }
 
 diesel::table! {
+    assets (id) {
+        id -> Integer,
+        local_path -> Text,
+        comfyui_name -> Text,
+        uploaded -> Bool,
+        tags -> Nullable<Text>,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
+diesel::table! {
     comfyui_apis (id) {
         id -> Integer,
         name -> Text,
@@ -33,4 +45,9 @@ diesel::table! {
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(ai_scripts, comfyui_apis, kv_store,);
+diesel::allow_tables_to_appear_in_same_query!(
+    ai_scripts,
+    assets,
+    comfyui_apis,
+    kv_store,
+);
