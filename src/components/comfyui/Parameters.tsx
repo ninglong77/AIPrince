@@ -1,14 +1,12 @@
 /** 解析 ComfyUI API JSON 参数 */
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PrimaryTextButton } from "../buttons";
 import { useComfyUiStore, Node } from "../../states/comfyui";
 import { Input, TextArea } from "../inputs";
 import { ParameterAlias } from "../../common";
 import CallApi from "./CallApi";
-import { LocalImage } from "../images";
-import { Modal, useModals } from "../modal";
-import ComfyUiAssets, { Asset, ComfyUiAssetsSelectorModal } from "./ComfyUiAssets";
+import { useModals } from "../modal";
 import { LocalAssetsSelectorModal } from "../ai_scripts/LocalAssetsSelector";
 import { LocalAsset } from "../../services/assets_manager";
 
