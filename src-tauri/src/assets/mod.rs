@@ -25,6 +25,17 @@ pub struct NewAsset {
     pub uploaded: bool,
 }
 
+// changeset
+#[derive(AsChangeset, Serialize, Deserialize)]
+#[diesel(table_name = crate::schema::assets)]
+#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+pub struct AssetChangeset {
+    pub comfyui_name: Option<String>,
+    pub tags: Option<String>,
+    pub uploaded: Option<bool>,
+}
+
+
 pub fn insert_asset(new_asset: NewAsset) -> bool {
     use crate::establish_connection;
     use crate::schema::assets::dsl::*;
@@ -33,6 +44,18 @@ pub fn insert_asset(new_asset: NewAsset) -> bool {
 
     diesel::insert_into(assets)
         .values(&new_asset)        
+        .execute(conn)
+        .is_ok()
+}
+
+pub fn update_asset(asset_id: i32, updated_asset: AssetChangeset) -> bool {
+    use crate::establish_connection;
+    use crate::schema::assets::dsl::*;
+
+    let conn = &mut establish_connection();
+
+    diesel::update(assets.filter(id.eq(asset_id)))
+        .set(&updated_asset)
         .execute(conn)
         .is_ok()
 }
@@ -52,7 +75,7 @@ pub fn list_assets() -> Vec<Assets> {
 
     let conn = &mut establish_connection();
 
-    assets.load::<Assets>(conn).unwrap()
+    assets.order_by(created_at.desc()).load::<Assets>(conn).unwrap()
 }
 
 #[tauri::command]
@@ -68,4 +91,9 @@ pub fn insert_assets_cmd(local_path: String, tags: String) -> bool {
 #[tauri::command]
 pub fn list_assets_cmd() -> Vec<Assets> {
     list_assets()
+}
+
+#[tauri::command]
+pub fn update_local_asset_cmd(id: i32, updated: AssetChangeset) -> bool {
+    update_asset(id, updated)
 }

@@ -27,7 +27,7 @@ export default function AssetsManager() {
         <Button onClick={load}>Reload</Button>
         <div className="flex flex-row flex-wrap gap-8 w-full mt-4">
           {local_assets.map((asset) => (
-            <div className="p-1 shadow">
+            <div className="p-1 shadow cursor-pointer">
               <WrapperClickedEnlarge
                 enlarge={<LocalImage className="w-75" src={asset.local_path} />}
               >

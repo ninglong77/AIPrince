@@ -9,6 +9,8 @@ import CallApi from "./CallApi";
 import { LocalImage } from "../images";
 import { Modal, useModals } from "../modal";
 import ComfyUiAssets, { Asset, ComfyUiAssetsSelectorModal } from "./ComfyUiAssets";
+import { LocalAssetsSelectorModal } from "../ai_scripts/LocalAssetsSelector";
+import { LocalAsset } from "../../services/assets_manager";
 
 export function InputValueSwitch({
   type,
@@ -24,17 +26,16 @@ export function InputValueSwitch({
   comfyui_url?: string;
 }) {
   const modal = useModals();
-  const [asset, setAsset] = useState<Asset>();
+  const [asset, setAsset] = useState<LocalAsset>();
   useEffect(() => {
     if (type === "image" && asset) {
-      console.info(JSON.stringify(asset))
-      setValue(asset.preview_url);
+      setValue(asset.comfyui_name);
     }
   }, [asset]);
   const openModal = () => {
     if (comfyui_url) {
       modal.open(
-        <ComfyUiAssetsSelectorModal server={comfyui_url} onSelected={(asset) => { 
+        <LocalAssetsSelectorModal server={comfyui_url} onSelected={(asset) => { 
           setAsset(asset);
         }} />
       );

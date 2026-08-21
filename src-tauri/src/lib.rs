@@ -56,6 +56,7 @@ pub fn run() {
             crate::assets::get_assets_cmd,
             crate::assets::insert_assets_cmd,
             crate::assets::list_assets_cmd,
+            crate::assets::update_local_asset_cmd,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -4,6 +4,8 @@ export interface LocalAsset {
   id: number;
   local_path: string;
   tags: string[];
+  comfyui_name: string;
+  uploaded: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -15,6 +17,14 @@ export async function get_assets_cmd(id: number) {
 
 export async function create_local_asset(local_path: string, tags: string[]) {
   const r = await invoke('insert_assets_cmd', {localPath: local_path, tags: tags.join(",")})
+  return r
+}
+
+export async function uploaded_local_asset(id: number, comfyuiName: string) {
+  const r = await invoke('update_local_asset_cmd', {id: id, updated: {
+    comfyui_name: comfyuiName,
+    uploaded: true
+  }})
   return r
 }
 
