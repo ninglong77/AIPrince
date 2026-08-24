@@ -15,6 +15,7 @@ export function RolesCard({ ai_script, id }: { id: number, ai_script: string }) 
   const [roles, setRoles] = useState<Role[]>([]);
   const notification = useNotification();
   const {open} = useModals();
+  // 存储剧本角色数据
   const roleImages = useKvStore().store('RoleImages').store(''+id)
   const roleImagesCache = useKvStore().store('RoleImagesCache').store(''+id).store('cache')
   useEffect(() => {

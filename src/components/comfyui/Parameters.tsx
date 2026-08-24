@@ -9,6 +9,7 @@ import CallApi from "./CallApi";
 import { useModals } from "../modal";
 import { LocalAssetsSelectorModal } from "../ai_scripts/LocalAssetsSelector";
 import { LocalAsset } from "../../services/assets_manager";
+import { LocalImage, WrapperClickedEnlarge } from "../images";
 
 export function InputValueSwitch({
   type,
@@ -33,9 +34,12 @@ export function InputValueSwitch({
   const openModal = () => {
     if (comfyui_url) {
       modal.open(
-        <LocalAssetsSelectorModal server={comfyui_url} onSelected={(asset) => { 
-          setAsset(asset);
-        }} />
+        <LocalAssetsSelectorModal
+          server={comfyui_url}
+          onSelected={(asset) => {
+            setAsset(asset);
+          }}
+        />,
       );
     }
   };
@@ -66,18 +70,33 @@ export function InputValueSwitch({
           )}
           {type === "image" && (
             <div>
-              <div>{value}</div>
+              <div className="flex flex-col gap-1">
+                {/* <WrapperClickedEnlarge enlarge={<LocalImage src={value as string} />}>
+                  <LocalImage src={value as string} />
+                </WrapperClickedEnlarge> */}
+                <div>{value}</div>
+              </div>
               {!comfyui_url ? (
                 <div className="text-sm text-slate-400">No comfyUI url</div>
               ) : (
-                <PrimaryTextButton
-                  onClick={() => {
-                    openModal();
-                  }}
-                  className="w-48 text-left"
-                >
-                  select
-                </PrimaryTextButton>
+                <div className="flex flex-row gap-4">
+                  <PrimaryTextButton
+                    onClick={() => {
+                      openModal();
+                    }}
+                    className="text-left"
+                  >
+                    Select
+                  </PrimaryTextButton>
+                  <PrimaryTextButton
+                    onClick={() => {
+                      setValue("");
+                    }}
+                    className="text-slate-400/80 text-md text-left"
+                  >
+                    clear
+                  </PrimaryTextButton>
+                </div>
               )}
             </div>
           )}

@@ -95,7 +95,6 @@ export function ComfyUiApiComponent({api, onImageCreated}: {api: ComfyUiApi, onI
           ))}
       </div>
       <div className="w-4/5">
-        {JSON.stringify(nodes)}
         <CallApi nodes={nodes} onImageDownloaded={onImageCreated} />
       </div>
     </div>

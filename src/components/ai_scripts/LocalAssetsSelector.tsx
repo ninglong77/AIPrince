@@ -173,12 +173,16 @@ export function LocalAssets({
                     return;
                   }
                   const hash = r.hash.replace("blake3:", "")+".png";
-                  return uploaded_local_asset(a.id, hash);
+                  uploaded_local_asset(a.id, hash);
+                  return hash
                 })
-                .then(() => {
+                .then(image => {
+                  if (!image) {
+                    return;
+                  }
                   console.info("上传成功");
-                  setSelected(a);
-                  onSelected?.(a);
+                  setSelected({...a, comfyui_name: image});
+                  onSelected?.({...a, comfyui_name: image});
                 })
                 .catch((e) => {
                   console.error("上传失败:" + e);

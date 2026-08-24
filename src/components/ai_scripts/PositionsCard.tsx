@@ -14,6 +14,7 @@ export function PositionsCard({ ai_script, id }: { id: number, ai_script: string
   const [positions, setPositions] = useState<Position[]>([]);
   const notification = useNotification();
   const {open} = useModals();
+  // 存储剧本场景数据
   const positionImages = useKvStore().store('PositionImages').store(''+id)
   const positionImagesCache = useKvStore().store('PositionImagesCache').store(''+id).store('cache')
   useEffect(() => {
